@@ -29,7 +29,6 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-
         android:theme="@style/AppTheme"
         tools:targetApi="n">
 
@@ -50,7 +49,6 @@
 
         <activity android:name=".ui.user.activity.NewPasswordActivity" />
 
-<!--        <activity android:name=".ui.user.fragmentdialog.NotificationDialogFragment" />-->
 
         <activity android:name=".ui.user.activity.LoginPasswordActivity" />
         <!--
@@ -122,6 +120,9 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
+        <!--        <activity android:name=".ui.user.fragmentdialog.NotificationDialogFragment" />-->
+
     </application>
 
 </manifest>

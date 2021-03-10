@@ -49,7 +49,7 @@ class NewPasswordActivity : AppCompatActivity() {
             when (it?.status) {
                 Status.Success -> {
 
-                    if (it.data.toString() == "")  {
+                    if (it.data.toString() == "密碼修改成功!")  {
                         Toast.makeText(this, "密碼修改成功!", Toast.LENGTH_SHORT ).show()
                         val intent = Intent(this, ShopmenuActivity::class.java)
                         startActivity(intent)
