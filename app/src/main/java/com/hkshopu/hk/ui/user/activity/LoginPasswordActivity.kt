@@ -52,6 +52,12 @@ class LoginPasswordActivity : BaseActivity(), TextWatcher {
                     if (it.data.toString() == "登入成功!") {
                         Toast.makeText(this, it.data.toString(), Toast.LENGTH_SHORT ).show()
 
+                        var settings_rememberPassword: SharedPreferences = this.getSharedPreferences("rememberPassword", 0)
+                        val editor : SharedPreferences.Editor = settings_rememberPassword.edit()
+                        editor.apply {
+                            putString("rememberPassword", "true")
+                        }.apply()
+
                         val intent = Intent(this, ShopmenuActivity::class.java)
                         startActivity(intent)
 

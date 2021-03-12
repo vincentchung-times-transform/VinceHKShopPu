@@ -55,6 +55,9 @@ class BuildAccountActivity : BaseActivity(), TextWatcher {
         super.onCreate(savedInstanceState)
         binding = ActivityBuildacntBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        settings = getSharedPreferences("DATA",0)
+
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestId()
             .requestEmail()
@@ -72,35 +75,48 @@ class BuildAccountActivity : BaseActivity(), TextWatcher {
         email = binding.editEmailReg.text.toString()
         password = binding.passwordReg.text.toString()
         passwordconf = binding.passwordConf.text.toString()
-//        if (email.isEmpty() || password.isEmpty() || passwordcof.isEmpty()) {
-//            binding.tvNext.disable()
-//        } else {
-//            binding.tvNext.enable()
-//        }
+        if (email.isEmpty() || password.isEmpty() || passwordconf.isEmpty()) {
+            binding.imgViewNextStep.isEnabled = false
+            binding.imgViewNextStep.setImageResource(R.mipmap.next_step_inable)
+        } else {
+            binding.imgViewNextStep.isEnabled = true
+            binding.imgViewNextStep.setImageResource(R.mipmap.next_step)
 
+        }
     }
 
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
     private fun initVM() {
-        VM.registerLiveData.observe(this, Observer {
+        VM.emailcheckLiveData.observe(this, Observer {
             when (it?.status) {
                 Status.Success -> {
-//                    if (url.isNotEmpty()) {
-//                        toast("登录成功")
-//
-//                    }
+                    if (it.data!!.equals("該電子郵件沒有重複使用!")) {
+                        settings.edit()
+                            .putString("email", email)
+                            .putString("password", password)
+                            .putString("passwordconf", passwordconf)
+                            .apply()
+                        val intent = Intent(this, UserIofoActivity::class.java)
+                        startActivity(intent)
 
-                    finish()
+                    }else{
+                        Toast.makeText(this, it.data.toString(), Toast.LENGTH_LONG).show()
+
+                    }
                 }
 //                Status.Start -> showLoading()
 //                Status.Complete -> disLoading()
             }
         })
+
     }
 
     private fun initView() {
+
+        //imgViewNextStep預設不能按
+        binding.imgViewNextStep.isEnabled = false
 
         initEditText()
         initClick()
@@ -115,11 +131,11 @@ class BuildAccountActivity : BaseActivity(), TextWatcher {
 
             finish()
         }
-        binding.ivGoogle.setOnClickListener {
+        binding.btnGoogleLogin.setOnClickListener {
 
             GoogleAccountBuild()
         }
-        binding.ivFb.setOnClickListener {
+        binding.btnFacebookLogin.setOnClickListener {
 
             callbackManager = CallbackManager.Factory.create()
             LoginManager.getInstance().logInWithReadPermissions(
@@ -163,19 +179,18 @@ class BuildAccountActivity : BaseActivity(), TextWatcher {
         binding.showPassconfBtn.setOnClickListener {
             ShowHidePass(it)
         }
-        settings = getSharedPreferences("DATA",0)
-        binding.tvNext.setOnClickListener {
-            if(email.isNotEmpty() && password.isNotEmpty()) {
-                settings.edit()
-                    .putString("email", email)
-                    .putString("password", password)
-                    .putString("passwordconf", passwordconf)
-                    .apply()
-            }
-            val intent = Intent(this, UserIofoActivity::class.java)
-            startActivity(intent)
-            finish()
+
+        binding.imgViewNextStep.setOnClickListener {
+
+                VM.emailCheck(this,email)
+
         }
+        binding.tvAgreeterm.setOnClickListener {
+            val intent = Intent(this, TermsOfServiceActivity::class.java)
+            startActivity(intent)
+
+        }
+
     }
 
     private fun initEditText() {

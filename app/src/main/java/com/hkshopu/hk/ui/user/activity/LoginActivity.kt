@@ -16,6 +16,12 @@ import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
+import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.GraphRequest
+import com.facebook.login.LoginManager
+import com.facebook.login.LoginResult
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -23,22 +29,32 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 
 import com.hkshopu.hk.Base.BaseActivity
 import com.hkshopu.hk.Base.response.Status
+import com.hkshopu.hk.R
 import com.hkshopu.hk.databinding.ActivityLoginBinding
+import com.hkshopu.hk.ui.main.activity.ShopmenuActivity
 import com.hkshopu.hk.ui.user.vm.AuthVModel
 import com.hkshopu.hk.utils.rxjava.RxBus
 import com.hkshopu.hk.widget.view.KeyboardUtil
 import com.hkshopu.hk.widget.view.disable
 import com.hkshopu.hk.widget.view.enable
-
+import java.util.*
 
 
 class LoginActivity : BaseActivity(), TextWatcher {
+    lateinit var callbackManager: CallbackManager
     private lateinit var binding: ActivityLoginBinding
     private lateinit var mGoogleSignInClient: GoogleSignInClient
     val RC_SIGN_IN = 900
 
     var email: String = ""
     private lateinit var settings: SharedPreferences
+
+    lateinit var settings_rememberMe: SharedPreferences
+    lateinit var settings_rememberEmail: SharedPreferences
+    lateinit var settings_rememberPassword: SharedPreferences
+    var rememberMeOrNot = ""
+    var rememberEmailOrNot = ""
+    var rememberPasswordOrNot = ""
 
     var to: Int = 0
     private val VM = AuthVModel()
@@ -49,26 +65,30 @@ class LoginActivity : BaseActivity(), TextWatcher {
         setContentView(binding.root)
 
         //local資料存取
-        settings = getSharedPreferences("DATA",0)
+        settings = this.getSharedPreferences("DATA",0)
+        settings_rememberMe = this.getSharedPreferences("rememberMe", 0)
+        settings_rememberEmail = this.getSharedPreferences("rememberEmail", 0)
+        settings_rememberPassword = this.getSharedPreferences("rememberPassword", 0)
+        rememberMeOrNot = settings_rememberMe.getString("rememberMe", "").toString()
+        rememberEmailOrNot = settings_rememberEmail.getString("rememberEmail", "").toString()
+        rememberPasswordOrNot = settings_rememberPassword.getString("rememberPassword", "").toString()
 
+        if ( rememberMeOrNot == "true" && rememberEmailOrNot == "true" && rememberPasswordOrNot == "true") {
 
+            val intent = Intent(this, ShopmenuActivity::class.java)
+            startActivity(intent)
 
+        }
 
         //google sign in
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestId()
-                .requestEmail()
-                .build()
+            .requestId()
+            .requestEmail()
+            .build()
 
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        //remember me
-        val sharedPreferences : SharedPreferences = getSharedPreferences("rememberMe", Context.MODE_PRIVATE)
-        val checkRememberMe : String? = sharedPreferences.getString("rememberMe", "")
-        if (checkRememberMe == "true") {
-            //transfer to next page
-        }
 
         initView()
         initClick()
@@ -81,9 +101,11 @@ class LoginActivity : BaseActivity(), TextWatcher {
 //        val password = binding.password1.text.toString()
         if (email.isEmpty()) {
             binding.btnNextStep.isEnabled = false
-
+            binding.btnNextStep.setImageResource(R.mipmap.next_step_inable)
         } else {
             binding.btnNextStep.isEnabled = true
+            binding.btnNextStep.setImageResource(R.mipmap.next_step)
+
         }
     }
 
@@ -97,8 +119,15 @@ class LoginActivity : BaseActivity(), TextWatcher {
 
                     if (it.data.toString() == "密碼錯誤!") {
 
-                        settings.edit()
-                            .putString("email", email)
+                        val editor : SharedPreferences.Editor = settings_rememberEmail.edit()
+                        editor.apply {
+                            putString("rememberEmail", "true")
+                        }.apply()
+
+
+                        settings.edit().apply {
+                            putString("email", email)
+                        }.apply()
 
                         val intent = Intent(this, LoginPasswordActivity::class.java)
                         startActivity(intent)
@@ -112,10 +141,33 @@ class LoginActivity : BaseActivity(), TextWatcher {
 //                Status.Complete -> disLoading()
             }
         })
+
+        VM.socialloginLiveData.observe(this, Observer {
+            when (it?.status) {
+                Status.Success -> {
+//                    Log.d("OnBoardActivity", "Sign-In Result" + it.data)
+                    if (it.data.toString().isNotEmpty()) {
+                        val intent = Intent(this, ShopmenuActivity::class.java)
+                        startActivity(intent)
+                        finish()
+
+                    } else {
+                        val intent = Intent(this, BuildAccountActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    }
+
+                }
+//                Status.Start -> showLoading()
+//                Status.Complete -> disLoading()
+            }
+        })
     }
 
     private fun initView() {
 
+        //imgViewNextStep預設不能按
+        binding.btnNextStep.isEnabled = false
         initEditText()
         initClick()
         if (email.isNotEmpty()) {
@@ -143,28 +195,66 @@ class LoginActivity : BaseActivity(), TextWatcher {
 
         }
 
-         binding.checkBoxStayLogin.setOnClickListener {
-        if (binding.checkBoxStayLogin.isChecked()) {
-            val sharedPreferences : SharedPreferences = getSharedPreferences("rememberMe", Context.MODE_PRIVATE)
-            val editor : SharedPreferences.Editor = sharedPreferences.edit()
-            editor.apply {
-                putString("rememberMe", "true")
-            }.apply()
+        binding.checkBoxStayLogin.setOnClickListener {
+            if (binding.checkBoxStayLogin.isChecked()) {
+                val sharedPreferences : SharedPreferences = getSharedPreferences("rememberMe", Context.MODE_PRIVATE)
+                val editor : SharedPreferences.Editor = sharedPreferences.edit()
+                editor.apply {
+                    putString("rememberMe", "true")
+                }.apply()
 
-        }else{
-            val sharedPreferences : SharedPreferences = getSharedPreferences("rememberMe", Context.MODE_PRIVATE)
-            val editor : SharedPreferences.Editor = sharedPreferences.edit()
-            editor.apply {
-                putString("rememberMe", "false")
-            }.apply()
+            }else{
+                val sharedPreferences : SharedPreferences = getSharedPreferences("rememberMe", Context.MODE_PRIVATE)
+                val editor : SharedPreferences.Editor = sharedPreferences.edit()
+                editor.apply {
+                    putString("rememberMe", "false")
+                }.apply()
+            }
         }
-    }
 
 
-    binding.btnGoogleLogin.setOnClickListener {
+        binding.btnGoogleLogin.setOnClickListener {
             GoogleSignIn()
-    }
+        }
 
+        binding.btnFacebookLogin.setOnClickListener {
+            callbackManager = CallbackManager.Factory.create()
+            LoginManager.getInstance().logInWithReadPermissions(
+                this, Arrays.asList("public_profile", "email")
+            )
+            LoginManager.getInstance().registerCallback(callbackManager,
+                object : FacebookCallback<LoginResult> {
+                    override fun onSuccess(loginResult: LoginResult) {
+                        val request =
+                            GraphRequest.newMeRequest(loginResult.accessToken) { `object`, response ->
+                                Log.d("OnBoardActivity", response.toString())
+                                try {
+                                    // Application code
+                                    val id = response.jsonObject.getString("id")
+                                    val email = response.jsonObject.getString("email")
+                                    VM.sociallogin(this@LoginActivity, email, id, "", "")
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
+                            }
+                        val parameters = Bundle()
+                        parameters.putString("fields", "id,name,email,gender,birthday")
+                        request.parameters = parameters
+                        request.executeAsync()
+                    }
+
+                    override fun onCancel() {
+                        Log.d("OnBoardActivity", "Facebook onCancel.")
+
+                    }
+
+                    override fun onError(error: FacebookException) {
+                        Log.d("OnBoardActivity", "Facebook onError.")
+
+                    }
+                })
+
+        }
 
     }
     private fun initEditText() {
@@ -176,4 +266,5 @@ class LoginActivity : BaseActivity(), TextWatcher {
         val signInIntent = mGoogleSignInClient.signInIntent
         startActivityForResult(signInIntent, RC_SIGN_IN)
     }
+
 }
