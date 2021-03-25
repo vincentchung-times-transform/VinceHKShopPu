@@ -1,5 +1,6 @@
 package com.hkshopu.hk.ui.main.activity
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -32,6 +33,21 @@ class InventoryAndPriceActivity : AppCompatActivity() {
     }
 
     fun initView() {
+
+        generateInventoryItems()
+
+        initClick()
+    }
+
+    fun initClick() {
+        binding.btnStore.setOnClickListener {
+            val intent = Intent(this, ShippingFareActivity::class.java)
+            startActivity(intent)
+        }
+
+    }
+
+    fun generateInventoryItems() {
 
         Thread(Runnable {
             runOnUiThread {
@@ -76,11 +92,6 @@ class InventoryAndPriceActivity : AppCompatActivity() {
 //                    }
 //                }
         }).start()
-
-        initClick()
-    }
-
-    fun initClick() {
 
     }
 }

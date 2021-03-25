@@ -357,7 +357,7 @@
     //運費
     <string name="title_shippingFare">運費</string>
     <string name="textView_packageWeight">包裹重量(g)<font color='red'><small><sub>*</sub></small></font></string>
-    <string name="textView_packageSize">包裹尺寸大小</string>
+    <string name="textView_packageSize">包裹尺寸大小<font color='red'><small><sub>*</sub></small></font></string>
     <string name="textView_packageUnit">長/寬/高 (cm)</string>
     <string name="hint_setWeight">設定重量</string>
     <string name="hint_setSize">設定尺寸</string>
