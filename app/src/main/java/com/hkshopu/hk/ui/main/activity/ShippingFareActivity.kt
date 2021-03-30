@@ -1,6 +1,7 @@
 package com.hkshopu.hk.ui.main.activity
 
 import MyLinearLayoutManager
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
@@ -82,6 +83,11 @@ class ShippingFareActivity : AppCompatActivity(){
 
         }
 
+        binding.btnShippingFareStore.setOnClickListener {
+            val intent = Intent(this, AddNewProductActivity::class.java)
+            startActivity(intent)
+        }
+
     }
 
     fun initEdit() {
@@ -95,6 +101,8 @@ class ShippingFareActivity : AppCompatActivity(){
         mutableList_itemShipingFare.clear()
 
         //進入"不可編輯模式"新增資料或重新新增資料
+        mutableList_itemShipingFare.add(ItemShippingFare("郵局", R.drawable.custom_unit_transparent))
+        mutableList_itemShipingFare.add(ItemShippingFare("順豐速運", R.drawable.custom_unit_transparent))
         mutableList_itemShipingFare.add(ItemShippingFare("", R.drawable.custom_unit_transparent))
 
 
@@ -117,6 +125,8 @@ class ShippingFareActivity : AppCompatActivity(){
         //進入"可編輯模式"清空mutableList_itemShipingFare
         mutableList_itemShipingFare.clear()
         //進入"可編輯模式"新增資料或重新新增資料
+        mutableList_itemShipingFare.add(ItemShippingFare("郵局", R.mipmap.btn_delete_fare))
+        mutableList_itemShipingFare.add(ItemShippingFare("順豐速運", R.mipmap.btn_delete_fare))
         mutableList_itemShipingFare.add(ItemShippingFare("", R.mipmap.btn_delete_fare))
 
         //原生layoutManager

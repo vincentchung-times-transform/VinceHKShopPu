@@ -145,6 +145,7 @@
                         <EditText
                             android:layout_width="45dp"
                             android:layout_height="30dp"
+                            android:gravity="center"
                             android:background="@drawable/customborder_gray"
                             android:src="@mipmap/ic_chevron"
                             android:textSize="14sp" />
@@ -157,6 +158,7 @@
                         <EditText
                             android:layout_width="45dp"
                             android:layout_height="30dp"
+                            android:gravity="center"
                             android:background="@drawable/customborder_gray"
                             android:src="@mipmap/ic_chevron"
                             android:textSize="14sp" />
@@ -169,6 +171,7 @@
                         <EditText
                             android:layout_width="45dp"
                             android:layout_height="30dp"
+                            android:gravity="center"
                             android:background="@drawable/customborder_gray"
                             android:src="@mipmap/ic_chevron"
                             android:textSize="14sp" />
@@ -179,45 +182,12 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/customborder_addproduct"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="41dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="20dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/textView_postal"
-                        android:textColor="@color/black" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="HKD$0" />
-
-                    <vn.luongvo.widget.iosswitchview.SwitchView
-                        android:layout_width="54dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="20dp"
-                        tools:ignore="MissingConstraints" />
-
-                </LinearLayout>
-
-<!--                <ImageView-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:src="@mipmap/description_line" />-->
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="5dp"-->
+<!--                android:background="@drawable/customborder_addproduct"-->
+<!--                android:orientation="vertical">-->
 
 <!--                <LinearLayout-->
 <!--                    android:layout_width="match_parent"-->
@@ -231,60 +201,60 @@
 <!--                        android:layout_width="match_parent"-->
 <!--                        android:layout_height="wrap_content"-->
 <!--                        android:layout_weight="1"-->
-<!--                        android:text="@string/textView_I_will_bear_the_freight"-->
+<!--                        android:text="@string/textView_postal"-->
 <!--                        android:textColor="@color/black" />-->
+
+<!--                    <TextView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:text="HKD$0" />-->
 
 <!--                    <vn.luongvo.widget.iosswitchview.SwitchView-->
 <!--                        android:layout_width="50dp"-->
 <!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginLeft="20dp"-->
 <!--                        tools:ignore="MissingConstraints" />-->
 
 <!--                </LinearLayout>-->
-            </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/customborder_addproduct"
-                android:orientation="vertical">
+<!--&lt;!&ndash;                <ImageView&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:layout_width="match_parent"&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:layout_height="wrap_content"&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:src="@mipmap/description_line" />&ndash;&gt;-->
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="41dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="20dp">
+<!--&lt;!&ndash;                <LinearLayout&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:layout_width="match_parent"&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:layout_height="41dp"&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:gravity="center_vertical"&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:orientation="horizontal"&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:paddingLeft="20dp"&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:paddingRight="20dp">&ndash;&gt;-->
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/textView_s.f.express"
-                        android:textColor="@color/black" />
+<!--&lt;!&ndash;                    <TextView&ndash;&gt;-->
+<!--&lt;!&ndash;                        android:layout_width="match_parent"&ndash;&gt;-->
+<!--&lt;!&ndash;                        android:layout_height="wrap_content"&ndash;&gt;-->
+<!--&lt;!&ndash;                        android:layout_weight="1"&ndash;&gt;-->
+<!--&lt;!&ndash;                        android:text="@string/textView_I_will_bear_the_freight"&ndash;&gt;-->
+<!--&lt;!&ndash;                        android:textColor="@color/black" />&ndash;&gt;-->
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="HKD$0" />
+<!--&lt;!&ndash;                    <vn.luongvo.widget.iosswitchview.SwitchView&ndash;&gt;-->
+<!--&lt;!&ndash;                        android:layout_width="50dp"&ndash;&gt;-->
+<!--&lt;!&ndash;                        android:layout_height="wrap_content"&ndash;&gt;-->
+<!--&lt;!&ndash;                        tools:ignore="MissingConstraints" />&ndash;&gt;-->
 
-                    <vn.luongvo.widget.iosswitchview.SwitchView
-                        android:layout_width="50dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="20dp"
-                        tools:ignore="MissingConstraints" />
+<!--&lt;!&ndash;                </LinearLayout>&ndash;&gt;-->
+<!--            </LinearLayout>-->
 
-                </LinearLayout>
-
-<!--                <ImageView-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:src="@mipmap/description_line" />-->
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="5dp"-->
+<!--                android:background="@drawable/customborder_addproduct"-->
+<!--                android:orientation="vertical">-->
 
 <!--                <LinearLayout-->
 <!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="46dp"-->
+<!--                    android:layout_height="41dp"-->
 <!--                    android:gravity="center_vertical"-->
 <!--                    android:orientation="horizontal"-->
 <!--                    android:paddingLeft="20dp"-->
@@ -294,16 +264,49 @@
 <!--                        android:layout_width="match_parent"-->
 <!--                        android:layout_height="wrap_content"-->
 <!--                        android:layout_weight="1"-->
-<!--                        android:text="@string/textView_I_will_bear_the_freight"-->
+<!--                        android:text="@string/textView_s.f.express"-->
 <!--                        android:textColor="@color/black" />-->
+
+<!--                    <TextView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:text="HKD$0" />-->
 
 <!--                    <vn.luongvo.widget.iosswitchview.SwitchView-->
 <!--                        android:layout_width="50dp"-->
 <!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginLeft="20dp"-->
 <!--                        tools:ignore="MissingConstraints" />-->
 
 <!--                </LinearLayout>-->
-            </LinearLayout>
+
+<!--&lt;!&ndash;                <ImageView&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:layout_width="match_parent"&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:layout_height="wrap_content"&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:src="@mipmap/description_line" />&ndash;&gt;-->
+
+<!--&lt;!&ndash;                <LinearLayout&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:layout_width="match_parent"&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:layout_height="46dp"&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:gravity="center_vertical"&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:orientation="horizontal"&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:paddingLeft="20dp"&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:paddingRight="20dp">&ndash;&gt;-->
+
+<!--&lt;!&ndash;                    <TextView&ndash;&gt;-->
+<!--&lt;!&ndash;                        android:layout_width="match_parent"&ndash;&gt;-->
+<!--&lt;!&ndash;                        android:layout_height="wrap_content"&ndash;&gt;-->
+<!--&lt;!&ndash;                        android:layout_weight="1"&ndash;&gt;-->
+<!--&lt;!&ndash;                        android:text="@string/textView_I_will_bear_the_freight"&ndash;&gt;-->
+<!--&lt;!&ndash;                        android:textColor="@color/black" />&ndash;&gt;-->
+
+<!--&lt;!&ndash;                    <vn.luongvo.widget.iosswitchview.SwitchView&ndash;&gt;-->
+<!--&lt;!&ndash;                        android:layout_width="50dp"&ndash;&gt;-->
+<!--&lt;!&ndash;                        android:layout_height="wrap_content"&ndash;&gt;-->
+<!--&lt;!&ndash;                        tools:ignore="MissingConstraints" />&ndash;&gt;-->
+
+<!--&lt;!&ndash;                </LinearLayout>&ndash;&gt;-->
+<!--            </LinearLayout>-->
 
 <!--            <LinearLayout-->
 <!--                android:layout_width="match_parent"-->
@@ -391,6 +394,7 @@
         android:visibility="invisible"/>
 
     <ImageView
+        android:id="@+id/btn_shipping_fare_store"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_marginTop="20dp"

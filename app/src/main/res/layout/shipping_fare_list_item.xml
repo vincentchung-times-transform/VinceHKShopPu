@@ -23,8 +23,15 @@
                 android:layout_height="41dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:paddingLeft="20dp"
+                android:paddingLeft="10dp"
                 android:paddingRight="20dp">
+
+                <ImageView
+                    android:id="@+id/imgView_deleteFare"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="10dp"
+                    android:src="@drawable/custom_unit_transparent"/>
 
                 <EditText
                     android:id="@+id/value_shipping_name"
@@ -43,11 +50,25 @@
                     android:textColor="@color/gray_txt"
                     android:text="HKD$0" />
 
-                <vn.luongvo.widget.iosswitchview.SwitchView
+
+                <RelativeLayout
                     android:layout_height="wrap_content"
                     android:layout_width="50dp"
-                    android:layout_marginLeft="20dp"
-                    tools:ignore="MissingConstraints" />
+                    android:layout_marginLeft="20dp">
+                    <ImageView
+                        android:id="@+id/diable_switch"
+                        android:layout_height="wrap_content"
+                        android:layout_width="50dp"
+                        android:src="@mipmap/diable_switch"
+                        android:visibility="visible"/>
+                    <vn.luongvo.widget.iosswitchview.SwitchView
+                        android:id="@+id/ios_switch"
+                        android:layout_height="wrap_content"
+                        android:layout_width="50dp"
+                        android:visibility="visible"/>
+                </RelativeLayout>
+
+
 
             </LinearLayout>
 
@@ -80,12 +101,7 @@
         </LinearLayout>
 
 
-        <ImageView
-            android:id="@+id/imgView_deleteFare"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:src="@drawable/custom_unit_transparent"/>
+
 
     </LinearLayout>
 
