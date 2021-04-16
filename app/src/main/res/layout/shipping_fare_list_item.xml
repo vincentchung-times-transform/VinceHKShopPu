@@ -23,6 +23,8 @@
                 android:layout_height="41dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
+                android:elevation="10dp"
+                android:outlineSpotShadowColor="@color/hkshop_color"
                 android:paddingLeft="10dp"
                 android:paddingRight="20dp">
 
@@ -34,7 +36,7 @@
                     android:src="@drawable/custom_unit_transparent"/>
 
                 <EditText
-                    android:id="@+id/value_shipping_name"
+                    android:id="@+id/editText_value_shipping_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -44,30 +46,43 @@
                     android:imeOptions="actionDone"
                     android:textColor="@color/black"
                     android:textSize="14sp" />
-
                 <TextView
+                    android:id="@+id/textView_HKdolors"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="HKD$"
                     android:textSize="14sp"
+                    android:paddingRight="1dp"
+                    android:textColor="@color/gray_txt"/>
+
+                <EditText
+                    android:id="@+id/edtText_shipping_fare"
+                    android:layout_width="25dp"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionDone"
+                    android:singleLine="true"
+                    android:textSize="14sp"
+                    android:inputType="number"
                     android:textColor="@color/gray_txt"
-                    android:text="HKD$0" />
+                    android:hint="0"
+                    android:background="@color/white"/>
 
 
                 <RelativeLayout
                     android:layout_height="wrap_content"
                     android:layout_width="50dp"
                     android:layout_marginLeft="20dp">
-                    <ImageView
-                        android:id="@+id/diable_switch"
+
+                    <com.zilchzz.library.widgets.EasySwitcher
+                        android:id="@+id/mEasySwitcher"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_width="50dp"
-                        android:src="@mipmap/diable_switch"
-                        android:visibility="visible"/>
-                    <vn.luongvo.widget.iosswitchview.SwitchView
-                        android:id="@+id/ios_switch"
-                        android:layout_height="wrap_content"
-                        android:layout_width="50dp"
-                        android:visibility="visible"/>
+                        app:sbAnimTime="300"
+                        app:sbCloseBgColor="#d9d9d9"
+                        app:sbOpenBgColor="#34C759"
+                        app:sbDefaultOpened="false"
+                        app:sbToggleColor="@android:color/white"  />
+
                 </RelativeLayout>
 
 
@@ -102,11 +117,6 @@
 <!--            </LinearLayout>-->
         </LinearLayout>
 
-
-
-
     </LinearLayout>
-
-
 
 </LinearLayout>

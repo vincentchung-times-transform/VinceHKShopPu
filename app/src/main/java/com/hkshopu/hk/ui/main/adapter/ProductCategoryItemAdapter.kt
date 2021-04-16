@@ -1,5 +1,7 @@
 package com.hkshopu.hk.ui.main.adapter
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.util.Log
@@ -17,7 +19,6 @@ import com.bumptech.glide.request.RequestOptions
 import com.google.gson.Gson
 import com.hkshopu.hk.R
 import com.hkshopu.hk.component.EventProductCatSelected
-import com.hkshopu.hk.component.EventShopCatSelected
 import com.hkshopu.hk.data.bean.ItemSpecification
 import com.hkshopu.hk.data.bean.ProductCategoryBean
 import com.hkshopu.hk.net.ApiConstants
@@ -108,43 +109,38 @@ class ProductCategoryItemAdapter: RecyclerView.Adapter<ProductCategoryItemAdapte
 
         //預設第一個項目為selected
         if(position == last_position) {
+
             holder.item_selected_icon.visibility = View.VISIBLE
             holder.item_unselected_icon.visibility = View.INVISIBLE
             holder.item_txt.setTextColor(Color.parseColor("#"+ product_category_list.get(position).product_category_background_color))
 
         }else{
+
             holder.item_selected_icon.visibility = View.INVISIBLE
             holder.item_unselected_icon.visibility = View.VISIBLE
             holder.item_txt.setTextColor(Color.parseColor("#C4C4C4"))
 
         }
 
-
-
-
-
-
-
-
         holder.itemView.setOnClickListener {
+
+            val category_item_selected = product_category_list.get(position)
+            var c_product_category_selected = category_item_selected.c_product_category
 
 
             var selected_item_id = holder.adapterPosition + 1
-            RxBus.getInstance().post(EventProductCatSelected(selected_item_id))
-
-
+            RxBus.getInstance().post(EventProductCatSelected(selected_item_id, c_product_category_selected))
 
             if(position != last_position) {
+
                 holder.item_selected_icon.visibility = View.VISIBLE
                 holder.item_unselected_icon.visibility = View.INVISIBLE
                 holder.item_txt.setTextColor(Color.parseColor("#"+ product_category_list.get(position).product_category_background_color))
-
 
                 notifyItemChanged(last_position)
                 last_position = position
 
             }
-
 
         }
 
@@ -162,9 +158,6 @@ class ProductCategoryItemAdapter: RecyclerView.Adapter<ProductCategoryItemAdapte
     }
 
 
-
-
-
     fun LoadImageFromWebURL(url: String?): Drawable? {
         return try {
             val iStream = URL(url).content as InputStream
@@ -173,5 +166,6 @@ class ProductCategoryItemAdapter: RecyclerView.Adapter<ProductCategoryItemAdapte
             null
         }
     }
+
 
 }
