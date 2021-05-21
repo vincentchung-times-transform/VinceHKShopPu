@@ -3,6 +3,7 @@ package com.hkshopu.hk.ui.main.store.activity
 
 import android.os.Bundle
 import android.util.Log
+import androidx.appcompat.app.AlertDialog
 
 import androidx.fragment.app.Fragment
 
@@ -13,6 +14,7 @@ import com.google.gson.Gson
 
 
 import com.hkshopu.hk.Base.BaseActivity
+import com.hkshopu.hk.component.CommonVariable
 import com.hkshopu.hk.data.bean.ShopCategoryBean
 import com.hkshopu.hk.databinding.ActivityMainBinding
 import com.hkshopu.hk.net.ApiConstants
@@ -26,11 +28,12 @@ import org.json.JSONObject
 import java.io.IOException
 
 
-class ShopmenuActivity: BaseActivity(), ViewPager.OnPageChangeListener {
+class ShopmenuActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     private lateinit var binding: ActivityMainBinding
 
     lateinit var manager: FragmentManager
-    var url = ApiConstants.API_HOST+"/shop_category/index/"
+    var page_position = 0
+    var url = ApiConstants.API_HOST + "/shop_category/index/"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -41,10 +44,11 @@ class ShopmenuActivity: BaseActivity(), ViewPager.OnPageChangeListener {
         getShopCategory(url)
 
     }
+
     private val fragments = mutableListOf<Fragment>()
     private fun initFragment() {
         manager = supportFragmentManager
-        if (fragments.isNotEmpty())return
+        if (fragments.isNotEmpty()) return
         val FirstFragment = FirstFragment.newInstance()
 //        val FirstFragment = ShopInfoFragment.newInstance()
         val SecondFragment = SecondFragment.newInstance()
@@ -52,10 +56,11 @@ class ShopmenuActivity: BaseActivity(), ViewPager.OnPageChangeListener {
         fragments.add(FirstFragment)
         fragments.add(SecondFragment)
         fragments.add(ShopListFragment)
-        binding.viewPager.adapter = object : FragmentPagerAdapter(manager, FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT){
-            override fun getItem(position: Int) =  fragments[position]
-            override fun getCount() = fragments.size
-        }
+        binding.viewPager.adapter =
+            object : FragmentPagerAdapter(manager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+                override fun getItem(position: Int) = fragments[position]
+                override fun getCount() = fragments.size
+            }
         binding.viewPager.setPagingEnabled(false)
         binding.viewPager.addOnPageChangeListener(this)
 //        binding.setViewPager(binding.mviewPager, arrayOf(getString(R.string.product),getString(R.string.info)))
@@ -64,37 +69,42 @@ class ShopmenuActivity: BaseActivity(), ViewPager.OnPageChangeListener {
     fun initView() {
         binding.bottomNavigationViewLinear.setNavigationChangeListener { view, position ->
 //            Log.d("ShopMenuActivity", "BottomView position：" + position)
+            page_position = position
             binding.viewPager.setCurrentItem(position, true);
 
         }
 
     }
 
-    fun initClick(){
+    fun initClick() {
 
 
     }
+
     private fun getShopCategory(url: String) {
+        CommonVariable.list.clear()
+        CommonVariable.ShopCategory.clear()
         val web = Web(object : WebListener {
             override fun onResponse(response: Response) {
                 var resStr: String? = ""
                 try {
                     resStr = response.body()!!.string()
                     val json = JSONObject(resStr)
-                    Log.d("ShopCategoryActivity", "返回資料 resStr：" + resStr)
-                    Log.d("ShopCategoryActivity", "返回資料 ret_val：" + json.get("ret_val"))
+                    Log.d("ShopmenuActivity", "返回資料 resStr：" + resStr)
+                    Log.d("ShopmenuActivity", "返回資料 ret_val：" + json.get("ret_val"))
                     val ret_val = json.get("ret_val")
                     if (ret_val.equals("已取得商店清單!")) {
 
                         val translations: JSONArray = json.getJSONArray("shop_category_list")
                         Log.d("ShopCategoryActivity", "返回資料 List：" + translations.toString())
-                        val list = ArrayList<ShopCategoryBean>()
                         for (i in 0 until translations.length()) {
                             val jsonObject: JSONObject = translations.getJSONObject(i)
                             val shopCategoryBean: ShopCategoryBean =
                                 Gson().fromJson(jsonObject.toString(), ShopCategoryBean::class.java)
-                            ApiConstants.list.add(shopCategoryBean)
-                            ApiConstants.ShopCategory.put(shopCategoryBean.id.toString(),shopCategoryBean)
+
+                            CommonVariable.list.add(shopCategoryBean)
+                            CommonVariable.ShopCategory.put(shopCategoryBean.id.toString(), shopCategoryBean)
+
                         }
 
                     }
@@ -114,9 +124,27 @@ class ShopmenuActivity: BaseActivity(), ViewPager.OnPageChangeListener {
         })
         web.Get_Data(url)
     }
-
     override fun onBackPressed() {
         super.onBackPressed()
+        if(page_position !=0){
+            binding.bottomNavigationViewLinear.setCurrentActiveItem(0)
+            binding.viewPager.setCurrentItem(0, true)
+        }else{
+
+            AlertDialog.Builder(this)
+                .setTitle("")
+                .setMessage("您確定要離開 ？")
+                .setNegativeButton("確定"){
+                    // 此為 Lambda 寫法
+                        dialog, which ->
+                    finishAffinity()
+                }
+                .setPositiveButton("取消"){ dialog, which -> dialog.cancel()
+
+                }
+                .show()
+        }
+
     }
 
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
