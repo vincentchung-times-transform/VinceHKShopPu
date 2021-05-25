@@ -31,7 +31,7 @@ class EventGetBankAccountSuccess(val list: ArrayList<ShopBankAccountBean>)
 class EventProductCatSelected(val selectrdId: Int = 1, var c_product_category: String)
 class EventProductCatLastPostion(val postion: Int = 1)
 
-class EventdeleverFragmentAfterUpdateStatus(val action : String)
+
 
 class EventCheckShipmentEnableBtnOrNot(val boolean : Boolean)
 
@@ -43,6 +43,8 @@ class EventCheckInvenSpecEnableBtnOrNot(val boolean : Boolean)
 
 //Add Product Events
 class EventProductSearch(val keyword: String = "")
+class EventProductDelete(val boolean: Boolean)
+class EventdeleverFragmentAfterUpdateStatus(val action : String)
 
 //Other Events (Not Used)
 
@@ -68,5 +70,7 @@ class EventShowBottomBar
 class EventReturnComic
 
 class EventEmailShow(val show:Boolean,val email: String? = null)
+
+class EventSyncBank
 
 class EventAutoSwitch

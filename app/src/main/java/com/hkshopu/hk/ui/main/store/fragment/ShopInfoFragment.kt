@@ -27,6 +27,7 @@ import com.hkshopu.hk.net.ApiConstants
 import com.hkshopu.hk.net.Web
 import com.hkshopu.hk.net.WebListener
 import com.hkshopu.hk.ui.main.product.activity.AddNewProductActivity
+import com.hkshopu.hk.ui.main.product.activity.MyMerchantsActivity
 import com.hkshopu.hk.ui.main.store.activity.*
 import com.hkshopu.hk.utils.extension.loadNovelCover
 import com.hkshopu.hk.utils.rxjava.RxBus

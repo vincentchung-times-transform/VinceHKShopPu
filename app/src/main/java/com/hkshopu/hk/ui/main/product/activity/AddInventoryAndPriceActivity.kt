@@ -35,8 +35,7 @@ class AddInventoryAndPriceActivity : BaseActivity(), TextWatcher{
     var mutableList_InvenDatas = mutableListOf<InventoryItemDatas>()
 
     val mAdapter = InventoryAndPriceSpecAdapter()
-    var mutableList_first_layer = mutableListOf<ItemInvenFirstLayer>()
-    var mutableList_second_layer = mutableListOf<ItemInvenSecondLayer>()
+    var mutableList_Inventory = mutableListOf<ItemInventory>()
 
     var datas_spec_size: Int = 0
     var datas_size_size: Int = 0
@@ -117,103 +116,105 @@ class AddInventoryAndPriceActivity : BaseActivity(), TextWatcher{
             if((datas_spec_size == datas_price_size||datas_spec_size == datas_quant_size) &&  rebuild_datas.equals(false)){
 
                 for(i in 0..datas_spec_size-1){
-                    mutableList_second_layer.add(ItemInvenSecondLayer(mutableList_spec.get(i).spec_name,"", "") )
+                    mutableList_Inventory.add(ItemInventory(datas_spec_title_first, "", mutableList_spec.get(i).spec_name, "","", ""))
+
                 }
-                mutableList_first_layer.add(ItemInvenFirstLayer(datas_spec_title_first, "", mutableList_spec.get(0).spec_name, mutableList_second_layer))
 
 
                 for(i in 0..datas_spec_size-1){
-                    mutableList_first_layer.get(0).mutableList_itemInvenSecondLayer.get(i).price = mutableList_price.get(i).toString()
-                    mutableList_first_layer.get(0).mutableList_itemInvenSecondLayer.get(i).quantity = mutableList_quant.get(i).toString()
+                    mutableList_Inventory.get(i).price = mutableList_price.get(i).toString()
+                    mutableList_Inventory.get(i).quantity = mutableList_quant.get(i).toString()
                 }
 
 
             }else{
-                for(i in 0..datas_spec_size-1){
-                    mutableList_second_layer.add(ItemInvenSecondLayer(mutableList_spec.get(i).spec_name,"", "") )
-                }
-                mutableList_first_layer.add(ItemInvenFirstLayer(datas_spec_title_first, "", mutableList_spec.get(0).spec_name, mutableList_second_layer))
 
+                for(i in 0..datas_spec_size-1){
+                    mutableList_Inventory.add(ItemInventory(datas_spec_title_first, "", mutableList_spec.get(i).spec_name,"","", ""))
+
+                }
             }
 
 
         }else{
             specGroup_only = false
 
-            if(datas_spec_size*datas_size_size == datas_price_size
-                ||datas_spec_size*datas_size_size == datas_quant_size){
+            if((datas_spec_size == datas_price_size||datas_spec_size == datas_quant_size) &&  rebuild_datas.equals(false)){
 
-
-
-                for(i in 0..datas_size_size-1){
-                    mutableList_second_layer.add(ItemInvenSecondLayer(mutableList_size.get(i).spec_name,"", "") )
-                }
-                for(i in 0..datas_spec_size-1){
-                    mutableList_first_layer.add(ItemInvenFirstLayer(datas_spec_title_first, datas_spec_title_second, mutableList_spec.get(i).spec_name, mutableList_second_layer))
-                }
-
-
-                val second_size = datas_size_size
-                val first_size: Int = datas_spec_size
-
-                var priceData_firstLayer: MutableList<MutableList<Int>> = mutableListOf()
-                var priceData_secondLayer: MutableList<Int>  = mutableListOf()
-                for(i in 0..second_size-1){
-                    priceData_secondLayer.add(0)
-                }
-                for (i in 0..first_size-1){
-                    priceData_firstLayer.add(priceData_secondLayer)
-                }
-
-
-                var quant_Data_firstLayer: MutableList<MutableList<Int>> = mutableListOf()
-                var quant_Data_secondLayer: MutableList<Int>  = mutableListOf()
-                for(i in 0..second_size-1){
-                    quant_Data_secondLayer.add(0)
-                }
-                for (i in 0..first_size-1){
-                    quant_Data_firstLayer.add(priceData_secondLayer)
-                }
-
-
-                for (r in 0 until first_size) {
-                    for (c in 0 until second_size) {
-                        for (i in 0 until first_size * second_size) {
-                            var index = r*second_size+c
-                            priceData_firstLayer[r][c] = mutableList_price.get(index)
-                            quant_Data_firstLayer[r][c] = mutableList_quant.get(index)
-                        }
-                    }
-                }
 
 
                 for(i in 0..datas_spec_size-1){
+
                     for(j in 0..datas_size_size-1){
-                        mutableList_first_layer.get(i).mutableList_itemInvenSecondLayer.get(j).price = priceData_firstLayer.get(i).get(j).toString()
-                        mutableList_first_layer.get(i).mutableList_itemInvenSecondLayer.get(j).quantity = quant_Data_firstLayer.get(i).get(j).toString()
+
+                        mutableList_Inventory.add(ItemInventory(datas_spec_title_first, datas_spec_title_second, mutableList_spec.get(i).spec_name, mutableList_size.get(j).spec_name,"", ""))
+
                     }
                 }
+
+                for(i in 0..datas_spec_size*datas_size_size-1){
+                    mutableList_Inventory.get(i).price = mutableList_price.get(i).toString()
+                    mutableList_Inventory.get(i).quantity = mutableList_quant.get(i).toString()
+                }
+
+
+//                val second_size = datas_size_size
+//                val first_size: Int = datas_spec_size
+//
+//                var priceData_firstLayer: MutableList<MutableList<Int>> = mutableListOf()
+//                var priceData_secondLayer: MutableList<Int>  = mutableListOf()
+//                for(i in 0..second_size-1){
+//                    priceData_secondLayer.add(0)
+//                }
+//                for (i in 0..first_size-1){
+//                    priceData_firstLayer.add(priceData_secondLayer)
+//                }
+//
+//
+//                var quant_Data_firstLayer: MutableList<MutableList<Int>> = mutableListOf()
+//                var quant_Data_secondLayer: MutableList<Int>  = mutableListOf()
+//                for(i in 0..second_size-1){
+//                    quant_Data_secondLayer.add(0)
+//                }
+//                for (i in 0..first_size-1){
+//                    quant_Data_firstLayer.add(priceData_secondLayer)
+//                }
+//
+//
+//                for (r in 0 until first_size) {
+//                    for (c in 0 until second_size) {
+//                        for (i in 0 until first_size * second_size) {
+//                            var index = r*second_size+c
+//                            priceData_firstLayer[r][c] = mutableList_price.get(index)
+//                            quant_Data_firstLayer[r][c] = mutableList_quant.get(index)
+//                        }
+//                    }
+//                }
+
+
 
 
             }else{
-                for(i in 0..datas_size_size-1){
-                    mutableList_second_layer.add(ItemInvenSecondLayer(mutableList_size.get(i).spec_name,"", "") )
-                }
-                for(i in 0..datas_spec_size-1){
-                    mutableList_first_layer.add(ItemInvenFirstLayer(datas_spec_title_first, datas_spec_title_second, mutableList_spec.get(i).spec_name, mutableList_second_layer))
-                }
 
+                for(i in 0..datas_spec_size-1){
+
+                    for(j in 0..datas_size_size-1){
+
+                        mutableList_Inventory.add(ItemInventory(datas_spec_title_first, datas_spec_title_second, mutableList_spec.get(i).spec_name, mutableList_size.get(j).spec_name,"", ""))
+
+                    }
+                }
             }
 
         }
 
-        Log.d("dfijdsiojfd", mutableList_first_layer.toString())
+
 
         binding.rViewInventory.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.rViewInventory.adapter = mAdapter
 
-        mAdapter.updateList(mutableList_first_layer, specGroup_only)
+        mAdapter.updateList(mutableList_Inventory, specGroup_only, datas_size_size)
 
     }
 
@@ -233,6 +234,7 @@ class AddInventoryAndPriceActivity : BaseActivity(), TextWatcher{
 
     fun initClick() {
         binding.titleBackAddshop.setOnClickListener {
+            MMKV.mmkvWithID("addPro").putBoolean("rebuld_spec", false)
             val intent = Intent(this, AddProductSpecificationMainActivity::class.java)
             startActivity(intent)
             finish()
@@ -240,31 +242,32 @@ class AddInventoryAndPriceActivity : BaseActivity(), TextWatcher{
 
         binding.btnInvenStore.setOnClickListener {
 
-            mutableList_first_layer = mAdapter.getDatas_invenSpec()
+            mutableList_Inventory = mAdapter.getDatas_invenSpec()
 
             if(datas_spec_size>0&&datas_size_size==0){
                 for (i in 0..datas_spec_size-1){
                     mutableList_InvenDatas.add(
                         InventoryItemDatas(
-                            mutableList_first_layer.get(0).spec_desc_1,
-                            mutableList_first_layer.get(0).spec_desc_2,
-                            mutableList_first_layer.get(0).spec_dec_1_items,
-                            mutableList_first_layer.get(0).mutableList_itemInvenSecondLayer.get(i).spec_dec_2_items,
-                            mutableList_first_layer.get(0).mutableList_itemInvenSecondLayer.get(i).price.toInt(),
-                            mutableList_first_layer.get(0).mutableList_itemInvenSecondLayer.get(i).quantity.toInt()))
+                            mutableList_Inventory.get(i).spec_desc_1,
+                            mutableList_Inventory.get(i).spec_desc_2,
+                            mutableList_Inventory.get(i).spec_dec_1_items,
+                            mutableList_Inventory.get(i).spec_dec_2_items,
+                            mutableList_Inventory.get(i).price.toInt(),
+                            mutableList_Inventory.get(i).quantity.toInt()))
                 }
             }else{
-                for (i in 0..datas_spec_size-1){
-                    for (j in 0..datas_size_size-1){
-                        mutableList_InvenDatas.add(
-                            InventoryItemDatas(
-                                mutableList_first_layer.get(i).spec_desc_1,
-                                mutableList_first_layer.get(i).spec_desc_2,
-                                mutableList_first_layer.get(i).spec_dec_1_items,
-                                mutableList_first_layer.get(i).mutableList_itemInvenSecondLayer.get(j).spec_dec_2_items,
-                                mutableList_first_layer.get(i).mutableList_itemInvenSecondLayer.get(j).price.toInt(),
-                                mutableList_first_layer.get(i).mutableList_itemInvenSecondLayer.get(j).quantity.toInt()))
-                    }
+                for (i in 0..datas_spec_size*datas_size_size-1){
+
+                    mutableList_InvenDatas.add(
+                        InventoryItemDatas(
+                            mutableList_Inventory.get(i).spec_desc_1,
+                            mutableList_Inventory.get(i).spec_desc_2,
+                            mutableList_Inventory.get(i).spec_dec_1_items,
+                            mutableList_Inventory.get(i).spec_dec_2_items,
+                            mutableList_Inventory.get(i).price.toInt(),
+                            mutableList_Inventory.get(i).quantity.toInt())
+                    )
+
                 }
             }
 
@@ -301,6 +304,8 @@ class AddInventoryAndPriceActivity : BaseActivity(), TextWatcher{
             MMKV.mmkvWithID("addPro").putString("inven_price_range", inven_price_range)
             MMKV.mmkvWithID("addPro").putString("inven_quant_range", inven_quant_range)
 
+
+            MMKV.mmkvWithID("addPro").putBoolean("rebuld_spec", false)
             val intent = Intent(this, AddNewProductActivity::class.java)
             startActivity(intent)
             finish()
@@ -381,8 +386,8 @@ class AddInventoryAndPriceActivity : BaseActivity(), TextWatcher{
     }
 
     override fun onBackPressed() {
-
-        val intent = Intent(this, EditProductSpecificationMainActivity::class.java)
+        MMKV.mmkvWithID("addPro").putBoolean("rebuld_spec", false)
+        val intent = Intent(this, AddProductSpecificationMainActivity::class.java)
         startActivity(intent)
         finish()
     }
@@ -398,27 +403,23 @@ class AddInventoryAndPriceActivity : BaseActivity(), TextWatcher{
 
                         boolean = it.boolean
 
-                        var empty_count_p = 0
-                        var empty_count_q = 0
-                        for(i in 0..mutableList_first_layer.size -1){
-                            for (j in 0..mutableList_first_layer.get(i).mutableList_itemInvenSecondLayer.size-1){
-                                if(mutableList_first_layer.get(i).mutableList_itemInvenSecondLayer.get(j).price.equals("")){
-                                    empty_count_p+=1
-                                    Log.d("dfdf","price${i}${j} : "+ empty_count_p.toString())
+                        var empty_count = 0
+
+                        for(i in 0..mutableList_Inventory.size -1){
+
+                                if(mutableList_Inventory.get(i).price.equals("")){
+                                    empty_count+=1
 
                                 }
-                                if(mutableList_first_layer.get(i).mutableList_itemInvenSecondLayer.get(j).quantity.equals("")){
-                                    empty_count_q+=1
-                                    Log.d("dfdf","quant${i}${j} : "+empty_count_q.toString())
+                                if(mutableList_Inventory.get(i).quantity.equals("")){
+                                    empty_count+=1
 
                                 }
 
-                            }
                         }
 
-                        Log.d("dfdf",empty_count_p.toString())
 
-                        if(empty_count_p>0){
+                        if(empty_count>0){
 
                             binding.btnInvenStore.disable()
                             binding.btnInvenStore.setImageResource(R.mipmap.btn_inven_store_disable)
@@ -431,6 +432,13 @@ class AddInventoryAndPriceActivity : BaseActivity(), TextWatcher{
 
 
                         }
+
+                        if(!boolean){
+                            binding.btnInvenStore.disable()
+                            binding.btnInvenStore.setImageResource(R.mipmap.btn_inven_store_disable)
+
+                        }
+
                     }
                 }
             }, {

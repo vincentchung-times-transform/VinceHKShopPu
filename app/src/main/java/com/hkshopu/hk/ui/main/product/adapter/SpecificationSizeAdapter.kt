@@ -62,7 +62,7 @@ class SpecificationSizeAdapter: RecyclerView.Adapter<SpecificationSizeAdapter.mV
 
             editTextView.setOnFocusChangeListener { v, hasFocus ->
                 if(hasFocus ){
-                    RxBus.getInstance().post(EventCheckFirstSpecEnableBtnOrNot(false))
+                    RxBus.getInstance().post(EventCheckSecondSpecEnableBtnOrNot(false))
                 }
             }
 
@@ -130,6 +130,7 @@ class SpecificationSizeAdapter: RecyclerView.Adapter<SpecificationSizeAdapter.mV
             when(v?.id) {
                 R.id.btn_cancel_specification ->{
                     onItemDissmiss(adapterPosition)
+                    RxBus.getInstance().post(EventCheckSecondSpecEnableBtnOrNot(false))
                 }
             }
         }

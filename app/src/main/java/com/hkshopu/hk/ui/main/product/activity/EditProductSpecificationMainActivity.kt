@@ -3,12 +3,10 @@ package com.hkshopu.hk.ui.main.product.activity
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Base64
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -19,31 +17,26 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.hkshopu.hk.Base.BaseActivity
 import com.hkshopu.hk.R
 import com.hkshopu.hk.component.*
 import com.hkshopu.hk.data.bean.*
 import com.hkshopu.hk.databinding.ActivityAddProductDescriptionMainBinding
 import com.hkshopu.hk.net.ApiConstants
-import com.hkshopu.hk.net.GsonProvider
 import com.hkshopu.hk.net.Web
 import com.hkshopu.hk.net.WebListener
 import com.hkshopu.hk.ui.main.product.adapter.SpecificationSizeAdapter
 import com.hkshopu.hk.ui.main.product.adapter.SpecificationSpecAdapter
 import com.hkshopu.hk.ui.main.product.fragment.SpecificationInfoDialogFragment
-import com.hkshopu.hk.ui.main.product.fragment.StoreOrNotDialogFragment
 import com.hkshopu.hk.utils.rxjava.RxBus
 import com.hkshopu.hk.widget.view.disable
 import com.hkshopu.hk.widget.view.enable
 import com.tencent.mmkv.MMKV
 import okhttp3.Response
-import org.jetbrains.anko.runOnUiThread
 import org.jetbrains.anko.singleLine
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import java.io.ByteArrayOutputStream
 import java.io.IOException
 
 class EditProductSpecificationMainActivity : BaseActivity() {
@@ -80,7 +73,9 @@ class EditProductSpecificationMainActivity : BaseActivity() {
         MMKV_user_id = MMKV.mmkvWithID("http").getInt("UserId", 0)
         MMKV_shop_id = MMKV.mmkvWithID("http").getInt("ShopId", 0)
         MMKV_product_id = MMKV.mmkvWithID("http").getInt("ProductId", 0)
+
         reset_spec_datas = MMKV.mmkvWithID("editPro").getBoolean("reset_spec_datas", true)
+
         if(reset_spec_datas.equals(true)){
             getProductInfo_forInvenDatas(MMKV_product_id)
         }else{
@@ -125,12 +120,10 @@ class EditProductSpecificationMainActivity : BaseActivity() {
             runOnUiThread {
                 //更新或新增item
                 mAdapter_spec.updateList(mutableList_spec)
+                binding.tvFirstLayerHint.setText("(${value_datas_spec_size}/10)")
 
             }
         }
-
-
-
 
 
         if(value_datas_size_size>0){
@@ -148,27 +141,29 @@ class EditProductSpecificationMainActivity : BaseActivity() {
 
                 //更新或新增item
                 mAdapter_size.updateList(mutableList_size)
+                binding.tvSecondLayerHint.setText("(${value_datas_size_size}/10)")
 
             }
 
         }
 
-
+        try{
+            Thread.sleep(800)
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        }
 
         if(value_datas_spec_size>0 && value_datas_size_size==0){
-            runOnUiThread{
+            runOnUiThread {
                 checkButtonNextStep_single()
             }
+
         }else if (value_datas_spec_size>0 && value_datas_size_size>0){
             runOnUiThread {
                 checkButtonNextStep_double()
             }
-        }else{
-            runOnUiThread {
-                binding.btnNextStep.isEnabled = false
-                binding.btnNextStep.setImageResource(R.mipmap.btn_nextstepdisable)
-            }
         }
+
     }
 
     fun initView() {
@@ -196,7 +191,9 @@ class EditProductSpecificationMainActivity : BaseActivity() {
     fun initClick() {
 
         binding.titleBackAddshop.setOnClickListener {
+
             MMKV.mmkvWithID("editPro").putBoolean("reset_spec_datas", true)
+
             val intent = Intent(this, EditProductActivity::class.java)
             startActivity(intent)
             finish()
@@ -213,6 +210,9 @@ class EditProductSpecificationMainActivity : BaseActivity() {
 
             checkButtonNextStep_single()
 
+
+            binding.tvFirstLayerHint.setText("(${mAdapter_spec.get_datas_spec_size()}/10)")
+
         }
         binding.btnClearAllSize.setOnClickListener {
 
@@ -220,6 +220,8 @@ class EditProductSpecificationMainActivity : BaseActivity() {
             clearAllSizeItem()
 
             checkButtonNextStep_double()
+
+            binding.tvSecondLayerHint.setText("(${mAdapter_size.get_datas_size_size()}/10)")
 
         }
 
@@ -256,8 +258,9 @@ class EditProductSpecificationMainActivity : BaseActivity() {
 
             }
 
+            MMKV.mmkvWithID("editPro").putBoolean("reset_spec_datas", false)
 
-            val intent = Intent(this, EditInventoryAndPriceOldActivity::class.java)
+            val intent = Intent(this, EditInventoryAndPriceActivity::class.java)
             startActivity(intent)
             finish()
         }
@@ -269,7 +272,7 @@ class EditProductSpecificationMainActivity : BaseActivity() {
                 Toast.makeText(this, "請先輸入第一層商品規格名稱", Toast.LENGTH_SHORT).show()
             }else{
                 mutableList_spec = mAdapter_spec.get_spec_list()
-                if (mutableList_spec.size < 3) {
+                if (mutableList_spec.size < 10) {
 
                     if (EDIT_MODE_SPEC == "0") {
 
@@ -299,6 +302,7 @@ class EditProductSpecificationMainActivity : BaseActivity() {
                                     binding.btnNextStep.disable()
                                     binding.btnNextStep.setImageResource(R.mipmap.btn_nextstepdisable)
 
+                                    binding.tvFirstLayerHint.setText("(${mAdapter_spec.get_datas_spec_size()}/10)")
 
                                 }
 
@@ -335,6 +339,7 @@ class EditProductSpecificationMainActivity : BaseActivity() {
                                     binding.btnNextStep.disable()
                                     binding.btnNextStep.setImageResource(R.mipmap.btn_nextstepdisable)
 
+                                    binding.tvFirstLayerHint.setText("(${mAdapter_spec.get_datas_spec_size()}/10)")
 
                                 }
 
@@ -348,7 +353,7 @@ class EditProductSpecificationMainActivity : BaseActivity() {
 
                 } else {
 
-                    Toast.makeText(this, "只能新增最多三個規格", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "只能新增最多十個規格", Toast.LENGTH_SHORT).show()
 
                 }
             }
@@ -479,6 +484,7 @@ class EditProductSpecificationMainActivity : BaseActivity() {
                                     binding.btnNextStep.disable()
                                     binding.btnNextStep.setImageResource(R.mipmap.btn_nextstepdisable)
 
+                                    binding.tvSecondLayerHint.setText("(${mAdapter_size.get_datas_size_size()}/10)")
 
                                 }
 
@@ -518,6 +524,7 @@ class EditProductSpecificationMainActivity : BaseActivity() {
                                     binding.btnNextStep.disable()
                                     binding.btnNextStep.setImageResource(R.mipmap.btn_nextstepdisable)
 
+                                    binding.tvSecondLayerHint.setText("(${mAdapter_size.get_datas_size_size()}/10)")
 
                                 }
 
@@ -530,7 +537,7 @@ class EditProductSpecificationMainActivity : BaseActivity() {
                     }
 
                 } else {
-                    Toast.makeText(this, "只能新增最多三個規格", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "只能新增最多十個規格", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -776,7 +783,9 @@ class EditProductSpecificationMainActivity : BaseActivity() {
     }
 
     override fun onBackPressed() {
+
         MMKV.mmkvWithID("editPro").putBoolean("reset_spec_datas", true)
+
         val intent = Intent(this, EditProductActivity::class.java)
         startActivity(intent)
         finish()
@@ -803,7 +812,7 @@ class EditProductSpecificationMainActivity : BaseActivity() {
 
                             }
                         }
-
+                        binding.tvFirstLayerHint.setText("(${mAdapter_spec.get_datas_spec_size()}/10)")
 
                     }
                     is EventCheckSecondSpecEnableBtnOrNot -> {
@@ -817,7 +826,7 @@ class EditProductSpecificationMainActivity : BaseActivity() {
                                 checkButtonNextStep_double()
                             }
                         }
-
+                        binding.tvSecondLayerHint.setText("(${mAdapter_size.get_datas_size_size()}/10)")
                     }
                 }
             }, {

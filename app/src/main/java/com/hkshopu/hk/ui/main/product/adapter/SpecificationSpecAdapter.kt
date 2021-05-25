@@ -128,6 +128,7 @@ class SpecificationSpecAdapter: RecyclerView.Adapter<SpecificationSpecAdapter.mV
             when(v?.id) {
                 R.id.btn_cancel_specification ->{
                     onItemDissmiss(adapterPosition)
+                    RxBus.getInstance().post(EventCheckFirstSpecEnableBtnOrNot(false))
                 }
             }
         }
