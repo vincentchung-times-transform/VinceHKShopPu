@@ -58,6 +58,9 @@ class RankingTopSaleTopFragment : Fragment() {
     private val adapter = TopProductAdapter(currency, userId)
     var max_seq = 0
 //    var userId = ""
+    val mode = "top_sale"
+    var url = ApiConstants.API_HOST+"/product/"+mode+"/product_analytics_pages/"
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -66,23 +69,35 @@ class RankingTopSaleTopFragment : Fragment() {
         val v = inflater.inflate(R.layout.fragment_ranking_hotsales, container, false)
 
         progressBar = v.find<ProgressBar>(R.id.progressBar_product_top)
-        progressBar.visibility = View.VISIBLE
+        progressBar.visibility = View.GONE
         refreshLayout = v.find<SmartRefreshLayout>(R.id.refreshLayout)
         refreshLayout.visibility = View.VISIBLE
         layout_empty_result = v.find(R.id.layout_empty_result)
         layout_empty_result.visibility = View.GONE
 
-
-        val mode = "top_sale"
-        var url = ApiConstants.API_HOST+"/product/"+mode+"/product_analytics_pages/"
         topProduct = v.find<RecyclerView>(R.id.recyclerview_top)
-        getProductOverAll(url,userId,max_seq)
 
         initView()
         initEvent()
+        initRefresh()
 
         return v
     }
+
+    override fun onResume() {
+        super.onResume()
+        var userId = MMKV.mmkvWithID("http").getString("UserId", "").toString()
+        val mode = "top_sale"
+        var url = ApiConstants.API_HOST+"/product/"+mode+"/product_analytics_pages/"
+        var max_seq = 0
+        getProductOverAll(url,userId,max_seq)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        max_seq = 0
+    }
+
 
     private fun initView(){
 
@@ -93,10 +108,14 @@ class RankingTopSaleTopFragment : Fragment() {
         }
         refreshLayout.setOnRefreshListener {
 //            VM.loadShop(this)
+            var userId = MMKV.mmkvWithID("http").getString("UserId", "").toString()
+            val mode = "top_sale"
+            var url = ApiConstants.API_HOST+"/product/"+mode+"/product_analytics_pages/"
+            var max_seq = 0
+            getProductOverAll(url,userId,max_seq)
             refreshLayout.finishRefresh()
         }
         refreshLayout.setOnLoadMoreListener {
-
             val mode = "top_sale"
             var url = ApiConstants.API_HOST+"/product/"+mode+"/product_analytics_pages/"
             max_seq ++
@@ -141,6 +160,7 @@ class RankingTopSaleTopFragment : Fragment() {
     }
 
     private fun getProductOverAll(url: String,user_id:String,max_seq:Int) {
+        progressBar.visibility = View.VISIBLE
 
         val web = Web(object : WebListener {
             override fun onResponse(response: Response) {

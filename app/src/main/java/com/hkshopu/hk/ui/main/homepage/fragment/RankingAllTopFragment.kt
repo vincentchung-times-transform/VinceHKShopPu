@@ -54,6 +54,8 @@ class RankingAllTopFragment : Fragment() {
     private val adapter = TopProductAdapter(currency, userId)
     var max_seq = 0
 //    var userId = ""
+    var url = ApiConstants.API_HOST+"product/"+"overall"+"/product_analytics_pages/"
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -64,17 +66,28 @@ class RankingAllTopFragment : Fragment() {
         allProduct = v.find<RecyclerView>(R.id.recyclerview_rankall)
 
         progressBar = v.find<ProgressBar>(R.id.progressBar_product_all)
-        progressBar.visibility = View.VISIBLE
+        progressBar.visibility = View.GONE
         layout_empty_result = v.find(R.id.layout_empty_result)
         layout_empty_result.visibility = View.GONE
         refreshLayout = v.find<SmartRefreshLayout>(R.id.refreshLayout)
         refreshLayout.visibility = View.VISIBLE
 
-        var url = ApiConstants.API_HOST+"product/"+"overall"+"/product_analytics_pages/"
-        getProductOverAll(url,userId,max_seq)
         initView()
         initRefresh()
         return v
+    }
+
+    override fun onResume() {
+        super.onResume()
+        var userId = MMKV.mmkvWithID("http").getString("UserId", "").toString()
+        var url = ApiConstants.API_HOST+"product/"+"overall"+"/product_analytics_pages/"
+        var max_seq = 0
+        getProductOverAll(url,userId,max_seq)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        max_seq = 0
     }
 
     private fun initView(){
@@ -86,6 +99,10 @@ class RankingAllTopFragment : Fragment() {
         }
         refreshLayout.setOnRefreshListener {
 //            VM.loadShop(this)
+            var userId = MMKV.mmkvWithID("http").getString("UserId", "").toString()
+            var url = ApiConstants.API_HOST+"product/"+"overall"+"/product_analytics_pages/"
+            var max_seq = 0
+            getProductOverAll(url,userId,max_seq)
             refreshLayout.finishRefresh()
         }
         refreshLayout.setOnLoadMoreListener {
@@ -114,6 +131,7 @@ class RankingAllTopFragment : Fragment() {
     }
 
     private fun getProductOverAll(url: String,user_id:String,max_seq:Int) {
+        progressBar.visibility = View.VISIBLE
 
         val web = Web(object : WebListener {
             override fun onResponse(response: Response) {
@@ -130,7 +148,7 @@ class RankingAllTopFragment : Fragment() {
                     if (status == 0) {
 
                         val jsonArray: JSONArray = json.getJSONArray("data")
-                        Log.d("RankingTopSaleTop", "返回資料 jsonArray：" + jsonArray.toString())
+                        Log.d("RankingOverAll", "返回資料 jsonArray：" + jsonArray.toString())
 
                         for (i in 0 until jsonArray.length()) {
                             val jsonObject: JSONObject = jsonArray.getJSONObject(i)
@@ -191,6 +209,7 @@ class RankingAllTopFragment : Fragment() {
     }
 
     private fun getProductOverAllMore(url: String,user_id:String,max_seq:Int) {
+        Log.d("getProductOverAllMore", "max_seq: ${max_seq}")
         val web = Web(object : WebListener {
             override fun onResponse(response: Response) {
                 var resStr: String? = ""

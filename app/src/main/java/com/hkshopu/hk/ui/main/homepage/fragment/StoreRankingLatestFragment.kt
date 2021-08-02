@@ -54,6 +54,10 @@ class StoreRankingLatestFragment : Fragment() {
     lateinit var progressBar: ProgressBar
     private val adapter = StoreRecommendAdapter(userId)
     var max_seq = 0
+
+    val mode = "new"
+    var url = ApiConstants.API_HOST+"shop/get_shop_analytics_in_pages/"
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -62,24 +66,34 @@ class StoreRankingLatestFragment : Fragment() {
         val v = inflater.inflate(R.layout.fragment_ranking_latest_store, container, false)
         val activity: StoreRecommendActivity? = activity as StoreRecommendActivity?
 
-        val mode = "new"
-        var url = ApiConstants.API_HOST+"shop/get_shop_analytics_in_pages/"
         latestStore = v.find<RecyclerView>(R.id.recyclerview_latest_store)
 
         progressBar = v.find<ProgressBar>(R.id.progressBar_latest_store)
-        progressBar.visibility = View.VISIBLE
+        progressBar.visibility = View.GONE
         refreshLayout = v.find<SmartRefreshLayout>(R.id.refreshLayout)
         refreshLayout.visibility = View.VISIBLE
         layout_empty_result = v.find(R.id.layout_empty_result)
         layout_empty_result.visibility = View.GONE
-
-        getStoreOverAll(url,userId!!,mode,max_seq)
 
         initView()
         initEvent()
         initRefresh()
         return v
     }
+
+    override fun onResume() {
+        super.onResume()
+        var userId = MMKV.mmkvWithID("http").getString("UserId", "").toString()
+        val mode = "new"
+        var url = ApiConstants.API_HOST+"shop/get_shop_analytics_in_pages/"
+        getStoreOverAll(url,userId!!,mode,0)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        max_seq = 0
+    }
+
 
     private fun initView(){
 
@@ -90,6 +104,10 @@ class StoreRankingLatestFragment : Fragment() {
         }
         refreshLayout.setOnRefreshListener {
 //            VM.loadShop(this)
+            var userId = MMKV.mmkvWithID("http").getString("UserId", "").toString()
+            val mode = "new"
+            var url = ApiConstants.API_HOST+"shop/get_shop_analytics_in_pages/"
+            getStoreOverAll(url,userId!!,mode,0)
             refreshLayout.finishRefresh()
         }
         refreshLayout.setOnLoadMoreListener {
@@ -134,6 +152,7 @@ class StoreRankingLatestFragment : Fragment() {
 
     private fun getStoreOverAll(url: String,userId:String,mode:String,max_seq:Int) {
         Log.d("StoreRankingLatest", "資料 url：" + url)
+        progressBar.visibility = View.VISIBLE
         val web = Web(object : WebListener {
             override fun onResponse(response: Response) {
                 var resStr: String? = ""

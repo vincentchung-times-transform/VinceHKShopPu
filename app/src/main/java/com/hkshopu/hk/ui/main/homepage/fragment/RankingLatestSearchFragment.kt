@@ -13,11 +13,13 @@ import android.widget.ProgressBar
 import androidx.core.view.isVisible
 
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.HKSHOPU.hk.R
+import com.HKSHOPU.hk.component.EventPurchaseListToSpecificPage
 import com.HKSHOPU.hk.component.EventToProductSearch
 import com.HKSHOPU.hk.data.bean.ProductSearchBean
 
@@ -26,8 +28,10 @@ import com.HKSHOPU.hk.net.Web
 import com.HKSHOPU.hk.net.WebListener
 import com.HKSHOPU.hk.ui.main.homepage.adapter.ProductSearchAdapter
 import com.HKSHOPU.hk.ui.main.buyer.product.activity.ProductDetailedPageBuyerViewActivity
+import com.HKSHOPU.hk.ui.main.buyer.profile.fragment.PurchaseListFragment
 import com.HKSHOPU.hk.utils.rxjava.RxBus
 import com.HKSHOPU.hk.widget.view.KeyboardUtil
+import com.paypal.pyplcheckout.sca.runOnUiThread
 import com.scwang.smartrefresh.layout.SmartRefreshLayout
 import com.tencent.mmkv.MMKV
 import okhttp3.Response
@@ -73,7 +77,7 @@ class RankingLatestSearchFragment : Fragment() {
         val v = inflater.inflate(R.layout.fragment_ranking_latest, container, false)
 
         progressBar = v.find<ProgressBar>(R.id.progressBar_product_new)
-        progressBar.visibility = View.VISIBLE
+        progressBar.visibility = View.GONE
         refreshLayout = v.find<SmartRefreshLayout>(R.id.refreshLayout)
         refreshLayout.visibility = View.VISIBLE
         layout_empty_result = v.find(R.id.layout_empty_result)
@@ -90,6 +94,25 @@ class RankingLatestSearchFragment : Fragment() {
         return v
     }
 
+    override fun onResume() {
+        super.onResume()
+        Log.d("lifecycleForFragment", "onResume")
+        getSearchProductOverAll(userId.toString(), categoryId.toString(), sub_categoryId.toString(), "0", keyword!!)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("lifecycleForFragment", "onResume")
+        max_seq = 0
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        fragmentManager!!.beginTransaction().remove((this as Fragment?)!!)
+            .commitAllowingStateLoss()
+        Log.d("lifecycleForFragment", "onDestroyView")
+    }
+
     private fun initView(){
         progressBar.visibility = View.VISIBLE
 
@@ -100,7 +123,7 @@ class RankingLatestSearchFragment : Fragment() {
 
         initRecyclerView()
 
-        getSearchProductOverAll(userId.toString(), categoryId.toString(), sub_categoryId.toString(), max_seq.toString(), keyword!!)
+//        getSearchProductOverAll(userId.toString(), categoryId.toString(), sub_categoryId.toString(), "0", keyword!!)
         btn_refresh.setOnClickListener {
             getSearchProductOverAll(userId, "", "".toString(), "0", keyword!!)
         }
@@ -111,19 +134,15 @@ class RankingLatestSearchFragment : Fragment() {
         }
         refreshLayout.setOnRefreshListener {
 //            VM.loadShop(this)
+            getSearchProductOverAll(userId.toString(), categoryId.toString(), sub_categoryId.toString(), "0", keyword!!)
             refreshLayout.finishRefresh()
         }
         refreshLayout.setOnLoadMoreListener {
 
             var url = ApiConstants.API_HOST+"product/"+mode+"/product_analytics_pages_keyword"
             max_seq ++
-            if(keyword.isNotEmpty()){
-                categoryId = ""
-            }else{
-                keyword =""
-            }
 
-            getSearchProductOverAllMore(url, userId.toString(), categoryId.toString(), sub_categoryId.toString(), max_seq.toString(), keyword)
+            getSearchProductOverAllMore(url, userId, categoryId, sub_categoryId, max_seq.toString(), keyword)
 //            VM.loadMore(this)
         }
     }
@@ -160,7 +179,18 @@ class RankingLatestSearchFragment : Fragment() {
                         sub_categoryId = MMKV.mmkvWithID("http").getString("sub_product_category_id","").toString()
                         Log.d("RankingAllSearch", "資料 categoryId：" + categoryId.toString() + " ; sub_categoryId : ${sub_categoryId.toString()}")
 
-                        getSearchProductOverAll(userId.toString(), categoryId.toString(), sub_categoryId.toString(), max_seq.toString(), keyword!!)
+                        Thread(Runnable {
+
+                            try{
+                                Thread.sleep(600)
+                                getSearchProductOverAll(userId.toString(), categoryId.toString(), sub_categoryId.toString(), "0", keyword!!)
+                            } catch (e: InterruptedException) {
+                                e.printStackTrace()
+                            }
+
+                        }).start()
+
+
                     }
                 }
 
@@ -168,6 +198,7 @@ class RankingLatestSearchFragment : Fragment() {
     }
 
     private fun getSearchProductOverAll(user_id:String, category_id:String, sub_category_id:String, max_seq:String, keyword:String) {
+        progressBar.visibility = View.VISIBLE
 
         val url = ApiConstants.API_HOST+"/product/"+mode +"/product_analytics_pages_keyword/"
         val web = Web(object : WebListener {
@@ -177,10 +208,11 @@ class RankingLatestSearchFragment : Fragment() {
                 try {
                     resStr = response.body()!!.string()
                     val json = JSONObject(resStr)
-                    Log.d("RankingLatestSearchFragment", "返回資料 resStr：" + resStr)
-                    Log.d("RankingLatestSearchFragment", "返回資料 ret_val：" + json.get("ret_val"))
                     val ret_val = json.get("ret_val")
                     val status = json.get("status")
+                    Log.d("RankingLatestSearchFragment", "返回資料 resStr：" + resStr)
+                    Log.d("RankingLatestSearchFragment", "返回資料 ret_val：" + ret_val)
+
                     if (status == 0) {
 
                         val jsonObject: JSONObject = json.getJSONObject("data")
@@ -254,6 +286,12 @@ class RankingLatestSearchFragment : Fragment() {
     }
 
     private fun getSearchProductOverAllMore(url: String, user_id:String, category_id:String ,sub_category_id:String, max_seq:String, keyword:String) {
+        Log.d("getSearchProductOverAllMore", "getSearchProductOverAllMore: url：" + url)
+        Log.d("getSearchProductOverAllMore", "getSearchProductOverAllMore: userId：" + user_id)
+        Log.d("getSearchProductOverAllMore", "getSearchProductOverAllMore: category_id：" + category_id)
+        Log.d("getSearchProductOverAllMore", "getSearchProductOverAllMore: sub_category_id：" + sub_category_id)
+        Log.d("getSearchProductOverAllMore", "getSearchProductOverAllMore: max_seq：" + max_seq)
+        Log.d("getSearchProductOverAllMore", "getSearchProductOverAllMore: keyword：" + keyword)
         val web = Web(object : WebListener {
             override fun onResponse(response: Response) {
                 var resStr: String? = ""
@@ -261,20 +299,24 @@ class RankingLatestSearchFragment : Fragment() {
                 try {
                     resStr = response.body()!!.string()
                     val json = JSONObject(resStr)
-
                     val ret_val = json.get("ret_val")
                     val status = json.get("status")
+                    Log.d("getSearchProductOverAllMore", "Json：" + json.toString())
                     if (status == 0) {
+                        val jsonObject: JSONObject = json.getJSONObject("data")
+                        val jsonArray: JSONArray = jsonObject.getJSONArray("productsList")
 
-                        val jsonArray: JSONArray = json.getJSONArray("data")
-
-                        for (i in 0 until jsonArray.length()) {
-                            val jsonObject: JSONObject = jsonArray.getJSONObject(i)
-                            val productSearchBean: ProductSearchBean =
-                                Gson().fromJson(jsonObject.toString(), ProductSearchBean::class.java)
-                            list.add(productSearchBean)
+                        if(jsonArray.length()>0){
+                            for (i in 0 until jsonArray.length()) {
+                                val jsonObject: JSONObject = jsonArray.getJSONObject(i)
+                                val productSearchBean: ProductSearchBean =
+                                    Gson().fromJson(
+                                        jsonObject.toString(),
+                                        ProductSearchBean::class.java
+                                    )
+                                list.add(productSearchBean)
+                            }
                         }
-                        refreshLayout.finishLoadMore()
                     }
 
                     if(list.size > 0){
@@ -283,17 +325,25 @@ class RankingLatestSearchFragment : Fragment() {
                             adapter.add(list)
 
                         }
+                    }else {
+
+                        requireActivity().runOnUiThread {
+                            refreshLayout.finishLoadMore()
+                        }
                     }
 
                 } catch (e: JSONException) {
                     Log.d("errormessage", "getSearchProductOverAllMore: JSONException：" + e.toString())
+                    refreshLayout.finishLoadMore()
                 } catch (e: IOException) {
                     e.printStackTrace()
                     Log.d("errormessage", "getSearchProductOverAllMore: IOException：" + e.toString())
+                    refreshLayout.finishLoadMore()
                 }
             }
             override fun onErrorResponse(ErrorResponse: IOException?) {
                 Log.d("errormessage", "getSearchProductOverAllMore: ErrorResponse：" + ErrorResponse.toString())
+                refreshLayout.finishLoadMore()
             }
         })
         web.Do_GetSearchProduct(url,user_id,category_id,sub_category_id,max_seq,keyword)

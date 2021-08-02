@@ -57,6 +57,9 @@ class RankingCheapTopFragment : Fragment() {
     private val adapter = TopProductAdapter(currency, userId)
     var max_seq = 0
 //    var userId = ""
+
+    val mode = "lower_price"
+    var url = ApiConstants.API_HOST+"/product/"+mode+"/product_analytics_pages/"
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -67,22 +70,33 @@ class RankingCheapTopFragment : Fragment() {
 
 
         progressBar = v.find<ProgressBar>(R.id.progressBar_product_cheap)
-        progressBar.visibility = View.VISIBLE
+        progressBar.visibility = View.GONE
         refreshLayout = v.find<SmartRefreshLayout>(R.id.refreshLayout)
         refreshLayout.visibility = View.VISIBLE
         layout_empty_result = v.find(R.id.layout_empty_result)
         layout_empty_result.visibility = View.GONE
-
-        val mode = "lower_price"
-        var url = ApiConstants.API_HOST+"/product/"+mode+"/product_analytics_pages/"
         cheapProduct = v.find<RecyclerView>(R.id.recyclerview_cheap)
-        getProductOverAll(url,userId,max_seq)
 
         initView()
         initEvent()
         initRefresh()
         return v
     }
+
+    override fun onResume() {
+        super.onResume()
+        var userId = MMKV.mmkvWithID("http").getString("UserId", "").toString()
+        val mode = "lower_price"
+        var url = ApiConstants.API_HOST+"/product/"+mode+"/product_analytics_pages/"
+        getProductOverAll(url,userId,max_seq)
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        max_seq = 0
+    }
+
 
     private fun initView(){
 
@@ -93,6 +107,10 @@ class RankingCheapTopFragment : Fragment() {
         }
         refreshLayout.setOnRefreshListener {
 //            VM.loadShop(this)
+            var userId = MMKV.mmkvWithID("http").getString("UserId", "").toString()
+            val mode = "lower_price"
+            var url = ApiConstants.API_HOST+"/product/"+mode+"/product_analytics_pages/"
+            getProductOverAll(url,userId,max_seq)
             refreshLayout.finishRefresh()
         }
         refreshLayout.setOnLoadMoreListener {
@@ -135,6 +153,7 @@ class RankingCheapTopFragment : Fragment() {
     }
 
     private fun getProductOverAll(url: String,user_id:String,max_seq:Int) {
+        progressBar.visibility = View.VISIBLE
 
         val web = Web(object : WebListener {
             override fun onResponse(response: Response) {
@@ -247,7 +266,6 @@ class RankingCheapTopFragment : Fragment() {
 
                         activity!!.runOnUiThread {
                             adapter.add(list)
-
                         }
                     }
                     refreshLayout.finishLoadMore()
