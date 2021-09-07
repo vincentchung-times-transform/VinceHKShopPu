@@ -14,6 +14,7 @@ import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.Toast
+import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
@@ -36,11 +37,11 @@ import com.HKSHOPU.hk.ui.main.buyer.product.adapter.SpecificationFirstSelectingA
 import com.HKSHOPU.hk.ui.main.buyer.product.adapter.SpecificationSecondSelectingAdapter
 import com.HKSHOPU.hk.ui.main.buyer.product.fragment.ProductDetailedPageBuyerViewFragment
 import com.HKSHOPU.hk.ui.main.buyer.shoppingcart.activity.ShoppingCartEditActivity
+import com.HKSHOPU.hk.ui.main.homepage.activity.ShopPreviewActivity
 import com.HKSHOPU.hk.ui.main.homepage.activity.StoreRecommendActivity
 import com.HKSHOPU.hk.ui.main.homepage.activity.TopProductsActivity
+import com.HKSHOPU.hk.ui.main.notification.activity.NotificationActivity
 import com.HKSHOPU.hk.ui.main.seller.shop.activity.ShopEvaluationActivity
-import com.HKSHOPU.hk.ui.main.seller.shop.activity.ShopNotifyActivity
-import com.HKSHOPU.hk.ui.main.seller.shop.activity.ShopPreviewActivity
 import com.HKSHOPU.hk.ui.onboard.login.OnBoardActivity
 import com.HKSHOPU.hk.utils.rxjava.RxBus
 import com.google.android.flexbox.*
@@ -141,6 +142,7 @@ class ProductDetailedPageBuyerViewActivity : BaseActivity(), ViewPager.OnPageCha
 
         if(!MMKV_user_id.isNullOrEmpty()){
             GetShoppingCartItemCountForBuyer(MMKV_user_id)
+            getNotificationItemCount(MMKV_user_id)
         }
         binding.tvCartItemCount.visibility = View.GONE
         getProductDetailedInfo(MMKV_user_id,bundle_product_id)
@@ -202,10 +204,6 @@ class ProductDetailedPageBuyerViewActivity : BaseActivity(), ViewPager.OnPageCha
         }
         binding.containerDetailedProductsEvaluationMore.setOnClickListener {
             val intent = Intent(this, ShopEvaluationActivity::class.java)
-            startActivity(intent)
-        }
-        binding.icNotification.setOnClickListener {
-            val intent = Intent(this, ShopNotifyActivity::class.java)
             startActivity(intent)
         }
         binding.icCart.setOnClickListener {
@@ -535,9 +533,11 @@ class ProductDetailedPageBuyerViewActivity : BaseActivity(), ViewPager.OnPageCha
 
 
 
-
         }
-
+        binding!!.layoutNotify.setOnClickListener {
+            val intent = Intent(this, NotificationActivity::class.java)
+            startActivity(intent)
+        }
 //        binding.icMathAdd.setOnClickListener {
 //
 //            if(first_layer_clicked && second_layer_clicked){
@@ -1358,6 +1358,15 @@ class ProductDetailedPageBuyerViewActivity : BaseActivity(), ViewPager.OnPageCha
                                 binding.ivSameShopRating04.setImageResource(R.mipmap.ic_star)
                                 binding.ivSameShopRating05.setImageResource(R.mipmap.ic_star)
                             }
+                            }
+                        } else {
+                            runOnUiThread {
+                                binding.ivSameShopRating01.setImageResource(R.mipmap.ic_star)
+                                binding.ivSameShopRating02.setImageResource(R.mipmap.ic_star)
+                                binding.ivSameShopRating03.setImageResource(R.mipmap.ic_star)
+                                binding.ivSameShopRating04.setImageResource(R.mipmap.ic_star)
+                                binding.ivSameShopRating05.setImageResource(R.mipmap.ic_star)
+                            }
                         }
 
 
@@ -1444,9 +1453,7 @@ class ProductDetailedPageBuyerViewActivity : BaseActivity(), ViewPager.OnPageCha
                             }
                         }
 
-
                         GetDetailedProductSpecification(bundle_product_id)
-                    }
 
                 } catch (e: JSONException) {
                     Log.d("errormessage", "getSameShopProducts: JSONException: ${e.toString()}")
@@ -2089,6 +2096,65 @@ class ProductDetailedPageBuyerViewActivity : BaseActivity(), ViewPager.OnPageCha
         web.doAddItemsToShoppingCart(url, user_id , product_id, product_spec_id, quantity, shop_id)
     }
 
+    fun  getNotificationItemCount (user_id: String) {
+        val url = ApiConstants.API_HOST+"user_detail/${user_id}/notification_count/"
+        val web = Web(object : WebListener {
+            override fun onResponse(response: Response) {
+                var resStr: String? = ""
+                var notificationItemCount : String? = ""
+                try {
+                    resStr = response.body()!!.string()
+                    val json = JSONObject(resStr)
+                    val ret_val = json.get("ret_val")
+                    val status = json.get("status")
+                    Log.d("getNotificationItemCount", "返回資料 resStr：" + resStr)
+                    Log.d("getNotificationItemCount", "返回資料 ret_val：" + ret_val)
+                    if (status == 0) {
+                        val jsonArray: JSONArray = json.getJSONArray("data")
+                        for (i in 0 until jsonArray.length()) {
+                            notificationItemCount = jsonArray.get(i).toString()
+                        }
+                        Log.d(
+                            "getNotificationItemCount",
+                            "返回資料 jsonArray：" + notificationItemCount
+                        )
+
+                        runOnUiThread {
+//                            binding!!.tvNotifycount.text = notificationItemCount
+                            if(notificationItemCount!!.equals("0")){
+                                binding!!.tvNotifycount.visibility = View.GONE
+                            }else{
+                                binding!!.tvNotifycount.visibility = View.VISIBLE
+                            }
+                        }
+                    }else{
+                        runOnUiThread {
+//                            binding!!.imgViewLoadingBackgroundDetailedProductForBuyer.visibility = View.GONE
+                        }
+                    }
+                } catch (e: JSONException) {
+                    e.printStackTrace()
+                    Log.d("getNotificationItemCount_errormessage", "GetNotificationItemCount: JSONException: ${e.toString()}")
+                    runOnUiThread {
+//                        binding!!.imgViewLoadingBackgroundDetailedProductForBuyer.visibility = View.GONE
+                    }
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    Log.d("getNotificationItemCount_errormessage", "GetNotificationItemCount: IOException: ${e.toString()}")
+                    runOnUiThread {
+//                        binding!!.imgViewLoadingBackgroundDetailedProductForBuyer.visibility = View.GONE
+                    }
+                }
+            }
+            override fun onErrorResponse(ErrorResponse: IOException?) {
+                Log.d("getNotificationItemCount_errormessage", "GetNotificationItemCount: ErrorResponse: ${ErrorResponse.toString()}")
+                runOnUiThread {
+//                    binding!!.imgViewLoadingBackgroundDetailedProductForBuyer.visibility = View.GONE
+                }
+            }
+        })
+        web.Get_Data(url)
+    }
 
 
     @SuppressLint("CheckResult")
@@ -2274,12 +2340,12 @@ class ProductDetailedPageBuyerViewActivity : BaseActivity(), ViewPager.OnPageCha
                         } else {
                             super.onBackPressed()
                         }
-                        
+
                     }
                     is EventRefreshShoppingCartItemCount -> {
-                        
+
                         GetShoppingCartItemCountForBuyer(MMKV_user_id)
-                        
+
                     }
                     is EventBuyerDetailedProductBottomSheetShowHide ->{
                         other_product = true
@@ -2293,7 +2359,7 @@ class ProductDetailedPageBuyerViewActivity : BaseActivity(), ViewPager.OnPageCha
                         mutableList_second_specifications.clear()
 
                         if(mode=="show"){
-                            
+
                             binding.bottomSheetTextViewProductName.setText(product_name.toString())
                             binding.tvValueTimeForStocking.setText(stock_up_days.toString())
 

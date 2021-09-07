@@ -17,25 +17,26 @@ import com.HKSHOPU.hk.net.ApiConstants
 import com.HKSHOPU.hk.net.Web
 import com.HKSHOPU.hk.net.WebListener
 import com.HKSHOPU.hk.ui.main.buyer.profile.adapter.BuyerOrderDetail_Adapter
+import com.HKSHOPU.hk.ui.main.notification.activity.NotificationActivity
 import com.HKSHOPU.hk.ui.main.payment.activity.FpsPayActivity
 import com.HKSHOPU.hk.ui.main.payment.activity.FpsPayAuditActivity
+
 import com.HKSHOPU.hk.ui.main.seller.shop.activity.ShopNotifyActivity
 import com.HKSHOPU.hk.utils.extension.load
 import com.facebook.FacebookSdk
 import com.google.gson.Gson
+import com.tencent.mmkv.MMKV
 import okhttp3.Response
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
-import java.text.ParseException
-import java.text.SimpleDateFormat
 import java.util.*
 
 
 class BuyerPurchaseListPendingPaymentActivity : BaseActivity() {
     private lateinit var binding: ActivityBuyerorderdetailPendingpaymentBinding
-
+    var userId = MMKV.mmkvWithID("http").getString("UserId", "").toString()
 
     private val adapter = BuyerOrderDetail_Adapter()
     var orderNumber =""
@@ -53,14 +54,15 @@ class BuyerPurchaseListPendingPaymentActivity : BaseActivity() {
         initClick()
         orderId = intent.getBundleExtra("bundle")!!.getString("order_id").toString()
         doGetData(orderId!!)
+        getNotificationItemCount(userId)
     }
 
     private fun initView() {
 
     }
     private fun initClick() {
-        binding!!.ivNotify.setOnClickListener {
-            val intent = Intent(this, ShopNotifyActivity::class.java)
+        binding!!.layoutNotify.setOnClickListener {
+            val intent = Intent(this, NotificationActivity::class.java)
             startActivity(intent)
         }
         binding.ivBack.setOnClickListener {
@@ -126,7 +128,7 @@ class BuyerPurchaseListPendingPaymentActivity : BaseActivity() {
     }
 
     private fun doGetData(order_id: String) {
-        Log.d("order_id_inspecting", "order_id: ${order_id.toString()}")
+        Log.d("BuyerPurchaseList_pending_payment", "order_id: ${order_id.toString()}")
         binding.progressBar.visibility = View.VISIBLE
         binding.imgViewLoadingBackground.visibility = View.VISIBLE
 
@@ -143,8 +145,8 @@ class BuyerPurchaseListPendingPaymentActivity : BaseActivity() {
                     val json = JSONObject(resStr)
                     val ret_val = json.get("ret_val")
                     val status = json.get("status")
-                    Log.d("BuyerPurchaseList_compelete", "返回資料 resStr：" + resStr)
-                    Log.d("BuyerPurchaseList_compelete", "返回資料 ret_val：" + ret_val)
+                    Log.d("BuyerPurchaseList_pending_payment]", "返回資料 resStr：" + resStr)
+                    Log.d("BuyerPurchaseList_pending_payment", "返回資料 ret_val：" + ret_val)
 
                     if (status == 0) {
                         val jsonObject = json.getJSONObject("data")
@@ -194,14 +196,15 @@ class BuyerPurchaseListPendingPaymentActivity : BaseActivity() {
 
 
                 } catch (e: JSONException) {
-
+                    Log.d("BuyerPurchaseList_pending_payment", "JSONException：" + e)
                 } catch (e: IOException) {
                     e.printStackTrace()
-
+                    Log.d("BuyerPurchaseList_pending_payment", "IOException：" + e)
                 }
             }
 
             override fun onErrorResponse(ErrorResponse: IOException?) {
+                Log.d("BuyerPurchaseList_pending_payment", "ErrorResponse：" + ErrorResponse)
             }
         })
         web.Get_Data(url)
@@ -295,6 +298,66 @@ class BuyerPurchaseListPendingPaymentActivity : BaseActivity() {
             override fun onErrorResponse(ErrorResponse: IOException?) {
                 Log.d("doGetPaymentMethodList_errorMessage", "ErrorResponse：" + ErrorResponse.toString())
 
+            }
+        })
+        web.Get_Data(url)
+    }
+
+    private fun  getNotificationItemCount (user_id: String) {
+        val url = ApiConstants.API_HOST+"user_detail/${user_id}/notification_count/"
+        val web = Web(object : WebListener {
+            override fun onResponse(response: Response) {
+                var resStr: String? = ""
+                var notificationItemCount : String? = ""
+                try {
+                    resStr = response.body()!!.string()
+                    val json = JSONObject(resStr)
+                    val ret_val = json.get("ret_val")
+                    val status = json.get("status")
+                    Log.d("getNotificationItemCount", "返回資料 resStr：" + resStr)
+                    Log.d("getNotificationItemCount", "返回資料 ret_val：" + ret_val)
+                    if (status == 0) {
+                        val jsonArray: JSONArray = json.getJSONArray("data")
+                        for (i in 0 until jsonArray.length()) {
+                            notificationItemCount = jsonArray.get(i).toString()
+                        }
+                        Log.d(
+                            "getNotificationItemCount",
+                            "返回資料 jsonArray：" + notificationItemCount
+                        )
+
+                        runOnUiThread {
+//                            binding!!.tvNotifycount.text = notificationItemCount
+                            if(notificationItemCount!!.equals("0")){
+                                binding!!.tvNotifycount.visibility = View.GONE
+                            }else{
+                                binding!!.tvNotifycount.visibility = View.VISIBLE
+                            }
+                        }
+                    }else{
+                        runOnUiThread {
+//                            binding!!.imgViewLoadingBackgroundDetailedProductForBuyer.visibility = View.GONE
+                        }
+                    }
+                } catch (e: JSONException) {
+                    e.printStackTrace()
+                    Log.d("getNotificationItemCount_errormessage", "GetNotificationItemCount: JSONException: ${e.toString()}")
+                    runOnUiThread {
+//                        binding!!.imgViewLoadingBackgroundDetailedProductForBuyer.visibility = View.GONE
+                    }
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    Log.d("getNotificationItemCount_errormessage", "GetNotificationItemCount: IOException: ${e.toString()}")
+                    runOnUiThread {
+//                        binding!!.imgViewLoadingBackgroundDetailedProductForBuyer.visibility = View.GONE
+                    }
+                }
+            }
+            override fun onErrorResponse(ErrorResponse: IOException?) {
+                Log.d("getNotificationItemCount_errormessage", "GetNotificationItemCount: ErrorResponse: ${ErrorResponse.toString()}")
+                runOnUiThread {
+//                    binding!!.imgViewLoadingBackgroundDetailedProductForBuyer.visibility = View.GONE
+                }
             }
         })
         web.Get_Data(url)

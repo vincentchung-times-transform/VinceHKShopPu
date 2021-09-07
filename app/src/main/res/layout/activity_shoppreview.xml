@@ -86,6 +86,7 @@
             </RelativeLayout>
 
             <RelativeLayout
+                android:id="@+id/layout_notify"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
@@ -96,19 +97,22 @@
                     android:id="@+id/iv_notify"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="5dp"
-                    android:src="@mipmap/ic_notification" />
+                    android:padding="8dp"
+                    android:src="@mipmap/ic_notification"
+                    android:visibility="visible" />
 
                 <TextView
-                    android:layout_width="12dp"
-                    android:layout_height="12dp"
-                    android:layout_marginLeft="16dp"
-                    android:background="@drawable/customborder_round_turquise"
+                    android:id="@+id/tv_notifycount"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/customborder_round_fc4d3f"
+                    android:gravity="end"
                     android:text=""
-                    android:textAlignment="center"
-                    android:visibility="gone"
                     android:textColor="@color/white"
-                    android:textSize="10sp" />
+                    android:textSize="10sp"
+                    android:visibility="gone" />
             </RelativeLayout>
         </RelativeLayout>
 

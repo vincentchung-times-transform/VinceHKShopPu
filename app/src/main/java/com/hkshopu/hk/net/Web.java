@@ -2113,5 +2113,254 @@ public class Web {
         });
     }
 
+    public void doCreateStoreAd(String url,
+                                String user_id,
+                                String budget_type,
+                                String budget_amount,
+                                String ad_period_type,
+                                String start_datetime,
+                                String end_datetime,
+                                File ad_img,
+                                String details) {
+
+        RequestBody fileBody = RequestBody.create(MediaType.parse("image/*"), ad_img);
+        MultipartBody.Builder requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("user_id", String.valueOf(user_id))
+                .addFormDataPart("budget_type", String.valueOf(budget_type))
+                .addFormDataPart("budget_amount", String.valueOf(budget_amount))
+                .addFormDataPart("ad_period_type", String.valueOf(ad_period_type))
+                .addFormDataPart("start_datetime", String.valueOf(start_datetime))
+                .addFormDataPart("end_datetime", String.valueOf(end_datetime))
+                .addFormDataPart("details", String.valueOf(details))
+                .addFormDataPart("ad_img", ad_img.getName(), fileBody);
+
+        MultipartBody multipartBody = requestBody.build();
+        Request request = new Request.Builder().url(url).post(multipartBody).build();
+
+
+        Call call = okHttpClient.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                listener.onErrorResponse(e);
+                Log.d(TAG, "Return error ＝ " + e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.onResponse(response);
+                response.close();
+                call.cancel();
+            }
+        });
+    }
+
+    public void doCreateKeywordAd(String url,
+                                  String user_id,
+                                  String budget_type,
+                                  String budget_amount,
+                                  String ad_period_type,
+                                  String start_datetime,
+                                  String end_datetime,
+                                  String details) {
+
+        RequestBody formBody = new FormBody.Builder()
+                .add("user_id", user_id)
+                .add("budget_type", budget_type)
+                .add("budget_amount", budget_amount)
+                .add("ad_period_type", ad_period_type)
+                .add("start_datetime", start_datetime)
+                .add("end_datetime", end_datetime)
+                .add("details", details)
+                .build();
+        Request request = new Request.Builder().url(url).post(formBody).build();
+
+
+        Call call = okHttpClient.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                listener.onErrorResponse(e);
+                Log.d(TAG, "Return error ＝ " + e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.onResponse(response);
+                response.close();
+                call.cancel();
+            }
+        });
+    }
+    public void doUpdateKeywordAd(String url,
+                                  String ad_setting_header_id,
+                                  String ad_type,
+                                  String budget_type,
+                                  String budget_amount,
+                                  String ad_period_type,
+                                  String start_datetime,
+                                  String end_datetime,
+                                  String details) {
+
+        RequestBody formBody = new FormBody.Builder()
+                .add("ad_setting_header_id", ad_setting_header_id)
+                .add("ad_type", ad_type)
+                .add("budget_type", budget_type)
+                .add("budget_amount", budget_amount)
+                .add("ad_period_type", ad_period_type)
+                .add("start_datetime", start_datetime)
+                .add("end_datetime", end_datetime)
+                .add("details", details)
+                .build();
+        Request request = new Request.Builder().url(url).post(formBody).build();
+
+
+        Call call = okHttpClient.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                listener.onErrorResponse(e);
+                Log.d(TAG, "Return error ＝ " + e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.onResponse(response);
+                response.close();
+                call.cancel();
+            }
+        });
+    }
+
+
+    public void Do_GetOnShelfProducts(String url,String shopId) {
+
+        RequestBody formBody = new FormBody.Builder()
+                .add("shop_id", shopId)
+                .build();
+        Request request = new Request.Builder().url(url).post(formBody).build();
+
+
+        Call call = okHttpClient.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                listener.onErrorResponse(e);
+                Log.d(TAG, "Return error ＝ " + e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.onResponse(response);
+                response.close();
+                call.cancel();
+            }
+        });
+    }
+
+
+
+
+
+    public void Do_GetBidRanking(String url) {
+
+        Request request = new Request.Builder().url(url).get().build();
+
+        Call call = okHttpClient.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                listener.onErrorResponse(e);
+                Log.d(TAG, "Return error ＝ " + e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.onResponse(response);
+                response.close();
+                call.cancel();
+            }
+        });
+    }
+
+    public void Do_NotificationClicked(String url, String notification_id) {
+
+        RequestBody formBody = new FormBody.Builder()
+                .add("notification_id", notification_id)
+                .build();
+        Request request = new Request.Builder().url(url).post(formBody).build();
+
+        Call call = okHttpClient.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                listener.onErrorResponse(e);
+                Log.d(TAG, "Return error ＝ " + e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.onResponse(response);
+                response.close();
+                call.cancel();
+            }
+        });
+    }
+
+    public void doUpdateAdStatus(String url,
+                                String ad_header_id,
+                                String current_status) {
+//                RequestBody fileBody = RequestBody.create(MediaType.parse("image/*"), ad_img);
+        MultipartBody.Builder requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("ad_header_id", String.valueOf(ad_header_id))
+                .addFormDataPart("current_status", String.valueOf(current_status));
+
+        MultipartBody multipartBody = requestBody.build();
+        Request request = new Request.Builder().url(url).post(multipartBody).build();
+
+
+        Call call = okHttpClient.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                listener.onErrorResponse(e);
+                Log.d(TAG, "Return error ＝ " + e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.onResponse(response);
+                response.close();
+                call.cancel();
+            }
+        });
+    }
+
+
+
+    public void do_walletHistoryAddCreate(String url, JSONObject jsonObject) {
+
+        // put your json here
+        RequestBody body = RequestBody.create(JSON, String.valueOf(jsonObject));
+        Request request = new Request.Builder().url(url).post(body).build();
+
+        Call call = okHttpClient.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                listener.onErrorResponse(e);
+                Log.d(TAG, "Return error ＝ " + e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                listener.onResponse(response);
+                response.close();
+                call.cancel();
+            }
+        });
+    }
 
 }

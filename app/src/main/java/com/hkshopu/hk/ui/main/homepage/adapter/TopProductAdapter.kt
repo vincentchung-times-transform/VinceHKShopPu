@@ -97,6 +97,11 @@ class TopProductAdapter (var currency: Currency, var user_id: String): RecyclerV
 
         fun bindShop(topProductBean : TopProductBean){
 
+            when(topProductBean){
+
+            }
+
+
             itemView.setOnClickListener {
 
                 val intent = Intent(itemView.context, ProductDetailedPageBuyerViewActivity::class.java)

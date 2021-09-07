@@ -43,7 +43,8 @@ class CommonVariable private constructor() {
         var product_spec_dec_2_items_list = ArrayList<String>()
         var product_pic_path_list = ArrayList<String>()
 
-
+        //Ad On Shelf Products selecting
+        var selectedProductId: String = ""
 
     }
 }
